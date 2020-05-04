@@ -84,3 +84,51 @@ print(my_doc,target = './data/colony_formation_templete.docx')
 
 
 
+
+
+
+
+#载体病毒模板
+my_doc <- read_docx('./data/template.docx')
+my_doc %>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("contract_num")%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par("项目结题报告",style  = 'Title')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par(value = '',style  = 'Subtitle')%>%
+  body_bookmark('theme')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("date")%>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('pre_read_ft',style = 'pic_style')%>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "载体构建信息", style = "heading 1")%>%
+  body_add_par(value = "靶序列", style = "heading 2")%>%
+  body_add_par(value = "载体图谱", style = "heading 2")%>%
+  body_add_par(value = "结果质控", style = "heading 1")%>%
+  body_add_par(value = "质粒酶切验证", style = "heading 2")%>%
+  body_add_par(value = "测序比对验证", style = "heading 2")%>%
+  body_add_par(value = "病毒滴度测定", style = "heading 2")%>%
+  body_add_par(value = "附录", style = "heading 1")%>%
+  body_add_par(value = "测序引物序列", style = "heading 2")%>%
+  body_add_par(value = "分子实验数据", style = "heading 2")%>%
+  body_add_par(value = "分子实验数据文件夹内含有质粒图谱、质粒示意图、测序比对文件及酶切鉴定照片等分子实验原始数据。", style = "chinese_style")%>%
+  body_add_par(value = "病毒实验数据", style = "heading 2")%>%
+  body_add_par(value = "病毒实验数据文件夹内含有质粒转染和慢病毒感染的原始图片。（注：质粒转染图片和滴度检测图片命名规则：载体编号-时间-物镜倍数-荧光类型。eg. LW429-48h-4×-G（G:绿光，R:红光，W：白光））", style = "chinese_style")
+
+
+print(my_doc,target = './data/vector&vrius_templete.docx')
+
+
+
+
