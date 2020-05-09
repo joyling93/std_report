@@ -95,7 +95,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       font(fontname = fontname, part = "all")
     
     #读入模板
-    my_doc <- read_docx('./data/Co-IP结题报告模板.docx')
+    my_doc <- read_docx('./data/Co-IP_templete.docx')
     my_doc %>%
       cursor_bookmark("contract_num")%>%
       body_add_par(data_head[contract_num+1],style  = 'Subtitle')%>%
@@ -1107,15 +1107,8 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     titer <- str_which(data_head, '病毒滴度')
     fontname <- "Arial"
     
-    #上传图片定位
-    picture_list <- list('载体图谱','靶序列测序结果','酶切鉴定结果')
-    index <- unlist(lapply(picture_list,function(x){
-      str_which(image_name,x)
-    }))
-    image_path <- image_path[index]
-    
     #产品信息速览表
-    preread_ft <- raw_data2 %>%
+    pre_read_ft <- raw_data2 %>%
       flextable()%>%
       add_header_lines("产品信息速览表")%>%
       bold(part = 'header')%>%
@@ -1124,7 +1117,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       fontsize(i=1,size = 20,part = 'header')%>%
       fontsize(i=2,size = 12,part = 'header')%>%
       fontsize(j=-2,size = 10,part = 'body')%>%
-      fontsize(j=2,size = 7.5,part = 'body')%>%
+      fontsize(j=c(2,3),size = 7.5,part = 'body')%>%
       autofit(add_h = 0,add_w = 0)%>%
       height(height = 1,part = 'body')%>%
       height(height = 0.4,part = 'header')%>%
@@ -1141,9 +1134,6 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       pict_height_coe <- 1
     }
     
-    #图片高度控制
-    pict_height <- pict_height_coe*1.7
-    pict_height2 <- pict_height_coe*2.7
     
     #引物信息表
     primer_seq_data <- raw_data1[(primer_seq+2):(titer-1),]
@@ -1171,34 +1161,26 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       autofit(add_h = 0.2,add_w=0.2)%>%
       font(fontname = fontname, part = "all")
     
-    
-    #建立word文档
-    my_doc <- read_docx('./data/template.docx')
+    #读入模板
+    my_doc <- read_docx('./data/vector&vrius_templete.docx')
     my_doc %>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par(value = data_head[contract_num+1],style  = 'Subtitle')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par("项目结题报告",style  = 'Title')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par(value = paste('项目名称:',data_head[fun_type+1],data_head[ex_type+1],sep = ''),style  = 'Subtitle')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par('',style = 'Normal')%>%
+      cursor_bookmark("contract_num")%>%
+      body_add_par(data_head[contract_num+1],style  = 'Subtitle')%>%
+      cursor_bookmark("date")%>%
       body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
-      body_add_break(pos = "after")%>%
-      
-      body_add_par('',style = 'Normal')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_flextable(value = preread_ft)%>%
-      body_add_break(pos = "after")
+      cursor_bookmark("theme")%>%
+      body_add_par(value = paste('项目名称:',data_head[fun_type+1],data_head[ex_type+1],sep = ''),style  = 'Subtitle')%>%
+      cursor_reach("pre_read_ft")%>%
+      body_remove()%>%
+      body_add_par('',style = "pic_style")%>%
+      body_add_flextable(pre_read_ft)
     
     if(data_head[ex_type+1]=='载体构建'){
-      body_add_par(my_doc,value = "载体构建信息", style = "heading 1")
-      body_add_par(my_doc,value = "靶序列", style = "heading 2")
+      my_doc %>%
+        cursor_reach("测序引物序列")%>%
+        body_add_par("",style = "pic_style")%>%
+        body_add_flextable(value=primer_seq_ft)%>%
+        cursor_reach(keyword = "靶序列")
       n <- nrow(target_info_data)
       for(i in 1:n){
         body_add_par(my_doc,target_info_data[i,1],style = 'Normal')
@@ -1206,64 +1188,58 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
         body_add_par(my_doc,target_info_data[i,4],style = 'seq')
         body_add_par(my_doc,'',style = 'Normal')
       }
-      my_doc%>%
-        body_add_par(value = "载体图谱", style = "heading 2")%>%
-        body_add_img(image_path[[1]],pos = "after",width = 4.8,height = 4.2,style = "heading 3")%>%
-        body_add_fpar(fpar(
-          '图 1.2.1  载体图谱',
-          fp_p=fp_par(text.align = 'center')))%>%
-        body_add_break(pos = "after")%>%
-        body_add_par(value = "结果质控", style = "heading 1")
-      
       if(data_head[fun_type+1]=='过表达'){
-        my_doc%>%
-          body_add_par(value = "质粒酶切验证", style = "heading 2")%>%
-          body_add_img(image_path[[2]],pos = "after",width = 6.5,height = pict_height2,style = "heading 3")%>%
-          body_add_fpar(fpar(
-            '图 1.2.1  质粒酶切结果',
-            fp_p=fp_par(text.align = 'center')))%>%
-          body_add_par(value = "测序比对验证", style = "heading 2")%>%
-          body_add_par(value = "测序比对结果见附件：分子实验数据。", style = "chinese_style")%>%
-          body_add_break(pos = 'after')%>%
-          body_add_par(value = "附录", style = "heading 1")%>%
-          body_add_par(value = "测序引物序列", style = "heading 2")%>%
-          body_add_flextable(value=primer_seq_ft)%>%
-          body_add_par(value = "分子实验数据", style = "heading 2")%>%
-          body_add_par(value = "分子实验数据文件夹内含有质粒图谱、质粒示意图、测序比对文件及酶切鉴定照片等分子实验原始数据。", style = "chinese_style")
-        
-        
+        #确定报告结果类别
+        picture_list <- list('载体图谱',"酶切鉴定结果")
+        #删除多余
+        my_doc %>%
+          cursor_reach(keyword = "分子实验数据")%>%
+          body_add_par(value = "分子实验数据文件夹内含有质粒图谱、质粒示意图、测序比对文件及酶切鉴定照片等分子实验原始数据。", style = "chinese_style")%>%
+          cursor_reach(keyword = "病毒实验数据")%>%
+          body_remove()%>%
+          cursor_reach(keyword = "测序比对验证")%>%
+          body_remove()%>%
+          cursor_reach(keyword = "病毒滴度测定")%>%
+          body_remove()
       }else{
-        my_doc%>%
-          body_add_par(value = "测序比对验证", style = "heading 2")%>%
-          body_add_img(image_path[[2]],pos = "after",width = 6.3,height = pict_height,style = "heading 3")%>%
-          body_add_fpar(fpar(
-            '图 2.1.1  靶序列测序结果',
-            fp_p=fp_par(text.align = 'center')))%>%
-          body_add_break(pos = 'after')%>%
-          body_add_par(value = "附录", style = "heading 1")%>%
-          body_add_par(value = "测序引物序列", style = "heading 2")%>%
-          body_add_flextable(value=primer_seq_ft)%>%
-          body_add_par(value = "分子实验数据", style = "heading 2")%>%
-          body_add_par(value = "分子实验数据文件夹内含有质粒图谱、质粒示意图、测序比对文件等分子实验原始数据。", style = "chinese_style")
-        
+        picture_list <- list('载体图谱',"靶序列测序结果")
+        my_doc %>%
+          cursor_reach(keyword = "分子实验数据")%>%
+          body_add_par(value = "分子实验数据文件夹内含有质粒图谱、质粒示意图、测序比对文件及酶切鉴定照片等分子实验原始数据。", style = "chinese_style")%>%
+          cursor_reach(keyword = "病毒实验数据")%>%
+          body_remove()%>%
+          cursor_reach(keyword = "质粒酶切验证")%>%
+          body_remove()%>%
+          cursor_reach(keyword = "病毒滴度测定")%>%
+          body_remove()
       }
     }else if(data_head[ex_type+1]=='病毒包装'){
-      my_doc%>%
-        body_add_par(value = "结果质控", style = "heading 1")%>%
-        body_add_par(value = "质粒酶切验证", style = "heading 2")%>%
-        body_add_img(image_path,pos = "after",width = 6.5,height = pict_height2,style = "heading 3")%>%
-        body_add_par(value = "病毒滴度测定", style = "heading 2")%>%
+      picture_list <- list('酶切鉴定结果')
+      my_doc %>%
+        cursor_reach(keyword = "靶序列")%>%
+        body_remove()%>%
+        cursor_reach(keyword = "^载体构建信息$")%>%
+        body_remove()%>%
+        cursor_reach(keyword = "^载体$")%>%
+        body_remove()%>%
+        cursor_reach(keyword = "测序比对验证")%>%
+        body_remove()%>%
+        cursor_reach("病毒滴度测定")%>%
+        body_add_par("",style = "pic_style")%>%
         body_add_flextable(value=titer_data_ft)%>%
-        body_add_break(pos = 'after')%>%
-        
-        body_add_par(value = "附录", style = "heading 1")%>%
-        body_add_par(value = "病毒实验数据", style = "heading 2")%>%
-        body_add_par(value = "病毒实验数据文件夹内含有质粒转染和慢病毒感染的原始图片。（注：质粒转染图片和滴度检测图片命名规则：载体编号-时间-物镜倍数-荧光类型。eg. LW429-48h-4×-G（G:绿光，R:红光，W：白光））", style = "chinese_style")%>%
-        body_replace_all_text(paste(data_head[fun_type+1],data_head[ex_type+1],sep = ''), "病毒包装", only_at_cursor = FALSE)
+        cursor_reach(keyword = "测序引物序列")%>%
+        body_remove()%>%
+        cursor_reach(keyword = "分子实验数据")%>%
+        body_remove()%>%
+        cursor_reach(keyword = "病毒实验数据")%>%
+        body_add_par(value = "病毒实验数据文件夹内含有质粒转染和慢病毒感染的原始图片。（注：质粒转染图片和滴度检测图片命名规则：载体编号-时间-物镜倍数-荧光类型。eg. LW429-48h-4×-G（G:绿光，R:红光，W：白光））", style = "chinese_style")
       
     }else{
-      body_add_par(my_doc,value = "载体构建信息", style = "heading 1")
-      body_add_par(my_doc,value = "靶序列", style = "heading 2")
+      my_doc %>%
+        cursor_reach("测序引物序列")%>%
+        body_add_par("",style = "pic_style")%>%
+        body_add_flextable(value=primer_seq_ft)%>%
+        cursor_reach(keyword = "靶序列")
       n <- nrow(target_info_data)
       for(i in 1:n){
         body_add_par(my_doc,target_info_data[i,1],style = 'Normal')
@@ -1271,55 +1247,58 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
         body_add_par(my_doc,target_info_data[i,4],style = 'seq')
         body_add_par(my_doc,'',style = 'Normal')
       }
-      my_doc%>%
-        body_add_par(value = "载体图谱", style = "heading 2")%>%
-        body_add_img(image_path[1],pos = "after",width = 4.8,height = 4.2,style = "heading 3")%>%
-        body_add_fpar(fpar(
-          '图 1.2.1  载体图谱',
-          fp_p=fp_par(text.align = 'center')))%>%
-        body_add_break(pos = "after")%>%
-        body_add_par(value = "结果质控", style = "heading 1")
-      
       if(data_head[fun_type+1]=='过表达'){
-        my_doc%>%
-          body_add_par(value = "质粒酶切验证", style = "heading 2")%>%
-          body_add_img(image_path[[2]],pos = "after",width = 6.5,height = pict_height2,style = "heading 3")%>%
-          body_add_par(value = "测序比对验证", style = "heading 2")%>%
-          body_add_par(value = "测序比对结果见附件：分子实验数据。", style = "chinese_style")%>%
-          body_add_par(value = "病毒滴度测定", style = "heading 2")%>%
-          body_add_flextable(value=titer_data_ft)%>%
-          body_add_break(pos = 'after')%>%
-          
-          body_add_par(value = "附录", style = "heading 1")%>%
-          body_add_par(value = "测序引物序列", style = "heading 2")%>%
-          body_add_flextable(value=primer_seq_ft)%>%
-          body_add_par(value = "分子实验数据", style = "heading 2")%>%
-          body_add_par(value = "分子实验数据文件夹内含有质粒图谱、质粒示意图、测序比对文件及酶切鉴定照片等分子实验原始数据。", style = "chinese_style")%>%
-          body_add_par(value = "病毒实验数据", style = "heading 2")%>%
-          body_add_par(value = "病毒实验数据文件夹内含有质粒转染和慢病毒感染的原始图片。（注：质粒转染图片和滴度检测图片命名规则：载体编号-时间-物镜倍数-荧光类型。eg. LW429-48h-4×-G（G:绿光，R:红光，W：白光））", style = "chinese_style")
-        
-        
+        #确定报告结果类别
+        picture_list <- list('载体图谱',"酶切鉴定结果")
+        my_doc %>% cursor_reach(keyword = "测序比对验证")%>%
+          body_remove()
       }else{
-        my_doc%>%
-          body_add_par(value = "测序比对验证", style = "heading 2")%>%
-          body_add_img(image_path[[2]],pos = "after",width = 6.3,height = pict_height,style = "heading 3")%>%
-          body_add_fpar(fpar(
-            '图 2.1.1  靶序列测序结果',
-            fp_p=fp_par(text.align = 'center')))%>%
-          body_add_par(value = "病毒滴度测定", style = "heading 2")%>%
-          body_add_flextable(value=titer_data_ft)%>%
-          body_add_break(pos = 'after')%>%
-          
-          body_add_par(value = "附录", style = "heading 1")%>%
-          body_add_par(value = "测序引物序列", style = "heading 2")%>%
-          body_add_flextable(value=primer_seq_ft)%>%
-          body_add_par(value = "分子实验数据", style = "heading 2")%>%
-          body_add_par(value = "分子实验数据文件夹内含有质粒图谱、质粒示意图、测序比对文件等分子实验原始数据。", style = "chinese_style")%>%
-          body_add_par(value = "病毒实验数据", style = "heading 2")%>%
-          body_add_par(value = "病毒实验数据文件夹内含有质粒转染和慢病毒感染的原始图片。（注：质粒转染图片和滴度检测图片命名规则：载体编号-时间-物镜倍数-荧光类型。eg. LW429-48h-4×-G（G:绿光，R:红光，W：白光））", style = "chinese_style")
-        
+        picture_list <- list('载体图谱',"靶序列测序结果")
+        my_doc %>% cursor_reach(keyword = "质粒酶切验证")%>%
+          body_remove()
       }
+      my_doc %>%
+        cursor_reach("病毒滴度测定")%>%
+        body_add_par("",style = "pic_style")%>%
+        body_add_flextable(value=titer_data_ft)%>%
+        cursor_reach(keyword = "分子实验数据")%>%
+        body_add_par(value = "分子实验数据文件夹内含有质粒图谱、质粒示意图、测序比对文件及酶切鉴定照片等分子实验原始数据。", style = "chinese_style")%>%
+        cursor_reach(keyword = "病毒实验数据")%>%
+        body_add_par(value = "病毒实验数据文件夹内含有质粒转染和慢病毒感染的原始图片。（注：质粒转染图片和滴度检测图片命名规则：载体编号-时间-物镜倍数-荧光类型。eg. LW429-48h-4×-G（G:绿光，R:红光，W：白光））", style = "chinese_style")
     }
+    
+    #图片高度控制
+    pict_height_coe <- length(target_info_data$`载体类型`)-length(target_info_data$`载体类型`[target_info_data$`载体类型`=='对照'])
+    if(pict_height_coe<=0){
+      pict_height_coe <- 1
+    }
+    pict_height <- pict_height_coe*1.7
+    pict_height2 <- pict_height_coe*2.7
+    caption <- gsub('.png|.jpg',"",image_name)
+    
+    #图片插入
+    lapply(picture_list,function(x){
+      index <- str_which(image_name,x)
+      index <- sort(index,decreasing = T)
+      if(x=="载体图谱"){
+        pwidth <- 2.6
+        pheight <- 2.6
+      }else if(x=="酶切鉴定结果"){
+        pwidth <- 6.5
+        pheight <- pict_height2
+      }else if(x=="靶序列测序结果"){
+        pwidth <- 6.3
+        pheight <- pict_height
+      }
+      for(pic in index){
+        cursor_reach(my_doc,keyword = x)
+        body_add_par(my_doc,"",style = "pic_style")
+        slip_in_img(my_doc,image_path[pic],width = pwidth,height = pheight)
+        #body_add_par(my_doc,"",style = "pic_style")
+        #slip_in_text(my_doc,caption[pic])
+      }
+    })
+    body_replace_all_text(my_doc,'#.*?#','',only_at_cursor =FALSE)
     my_doc
     }
   
@@ -1517,8 +1496,6 @@ qRTPCR <- function(raw_data1,raw_data2,image_path,image_name){
   fontname <- "Arial"
   nor_group <- str_which(data_head, '归一化组')
   
-  
-  
   #实验分组
   assay_group_data <-  raw_data1[(ex_group+2):(statistic_p-1),]
   colnames(assay_group_data) <- raw_data1[(ex_group+1),]
@@ -1573,20 +1550,6 @@ qRTPCR <- function(raw_data1,raw_data2,image_path,image_name){
     arrange(相关基因,分组名称)%>%
     select(相关基因,分组名称,sample,value)%>%
     ungroup()
-  
-  #统计作图
-  p <- ggbarplot(z, x="分组名称", y="value", add = "mean_sd", fill = '相关基因',
-                 width = 0.5,position = position_dodge2())+
-    scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
-    theme(plot.title = element_text(lineheight=.8, size=30, face="bold",hjust = 0.5),
-          axis.title= element_text(size = 12),
-          axis.text.x = element_text(size = 10,angle = 45,hjust = 1),
-          axis.text.y = element_text(size = 12),
-          legend.position="none")+
-    scale_fill_brewer(palette = 'Set3')+
-    labs(x='',y='Ralative mRNA Level')+
-    facet_wrap(~相关基因,scales = 'free_x',ncol=1)
-  
   
   #均值标准差表
   mean_sd_data <- z %>% 
@@ -1652,6 +1615,26 @@ qRTPCR <- function(raw_data1,raw_data2,image_path,image_name){
     width(j = 3:4, width = 0.8)%>%
     height(i=1,height = 1.7,part = 'foot')%>%
     font(fontname = fontname, part = "all")
+  
+  #统计作图
+  p <- ggplot(mean_sd_data, aes(x=分组名称, y=Mean,fill =相关基因))+
+    geom_bar(stat = "identity",position="dodge",width = 0.5)+
+    geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
+                  position=position_dodge(0.8),width=.2,color='grey')+
+    scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+    theme(plot.title = element_text(face="bold"),
+          plot.title.position = "panel",
+          plot.subtitle = element_text(color = "grey"),
+          panel.background = element_rect(fill = NA),
+          axis.title= element_text(size = 12),
+          axis.text.x = element_text(size = 10,angle = 45,hjust = 1),
+          axis.line = element_line(colour = "black"),
+          axis.text.y = element_text(size = 10),
+          legend.position="right"
+    )+
+    scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
+    labs(x='',y='Ralative mRNA Level',title = "qRT-PCR",subtitle = "Control gruop has been set to 1.",
+         caption = "Plot by Syngenetech",fill="Gene")
   
   #仪器与试剂
   #仪器
@@ -1746,17 +1729,13 @@ qRTPCR <- function(raw_data1,raw_data2,image_path,image_name){
     body_add_break(pos = "after")%>%
     
     body_add_par(value = "图表绘制", style = "heading 2") %>% 
-    body_add_gg(value = p ,style = "heading 3",height=8)%>%
-    body_add_fpar(fpar(
-      '图3.3.1  qRT-PCR相对mRNA表达量统计图',
-      fp_p=fp_par(text.align = 'center')))%>%
+    body_add_gg(value = p ,style = "heading 3",height=6)%>%
     body_add_break(pos = "after")%>%
     
     body_add_par(value = "实验结论", style = "heading 2")
-    
-  
+
   my_doc
-  }
+}
   
   
   
@@ -2136,23 +2115,6 @@ cck8 <- function(raw_data1,raw_data2){
       mutate(value=round(value/as.numeric(nor_data[nor_data$靶点==unique(靶点),2]),digits = 3))%>%
       ungroup()
     
-    #作图
-    p <- ggbarplot(z2, x="靶点", y="value", add = "mean_sd", fill = "调控元件", 
-                   position = position_dodge(0.6),width = 0.5)+ 
-      stat_compare_means(aes(group=调控元件,
-                             label=paste0(..p.signif..,"\n")),
-                         method = "t.test",method.args = list(var.equal = TRUE))+
-      scale_y_continuous(expand = expand_scale(mult = c(0, .3)))+
-      theme(plot.title = element_text(lineheight=.8, size=30, face="bold",hjust = 0.5),
-            axis.title= element_text(size = 12),
-            axis.text.x = element_text(size = 12,angle = 45,hjust = 1),
-            axis.text.y = element_text(size = 12),
-            legend.position="right",
-            legend.title=element_blank(),
-            legend.key=element_rect(size=0.005))+
-      scale_fill_viridis(option = "E",discrete = T)+
-      labs(x='',y='Ralative Luciferase Activity \n(Ratio of fLuc/rLuc)')
-    
     #均值标准差表
     #未归一化
     mean_sd_data <- z %>% 
@@ -2190,7 +2152,9 @@ cck8 <- function(raw_data1,raw_data2){
         Mean=round(mean(value,na.rm = TRUE),digits = 3),
         SD=round(sd(value,na.rm = TRUE),digits = 3),
         QC=round(sd(value,na.rm = TRUE)/mean(value,na.rm = TRUE),digits = 3)
-      )
+      )%>%
+      arrange(desc(调控元件))
+    
     
     sample_data2 <- z2%>%
       spread(sample,value)
@@ -2249,6 +2213,29 @@ cck8 <- function(raw_data1,raw_data2){
       width(j = 1, width = 1.8)%>%
       height(i=1,height = 1.7,part = 'foot')%>%
       font(fontname = fontname, part = "all")
+    
+    mean_sd_data2$调控元件 <- factor(mean_sd_data2$调控元件,unique(sort(mean_sd_data2$调控元件,decreasing = T)))
+    
+    p <- ggplot(mean_sd_data2, aes(x=靶点, y=Mean,fill =调控元件))+
+      geom_bar(stat = "identity",position="dodge",width = 0.5)+
+      geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
+                    position=position_dodge(0.5),width=.2,color='grey')+
+      scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+      theme(plot.title = element_text(face="bold"),
+            plot.title.position = "panel",
+            plot.subtitle = element_text(color = "grey"),
+            panel.background = element_rect(fill = NA),
+            axis.title= element_text(size = 12),
+            axis.text.x = element_text(size = 10,angle = 45,hjust = 1),
+            axis.line = element_line(colour = "black"),
+            axis.text.y = element_text(size = 10),
+            legend.position="right"
+      )+
+      scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
+      labs(x='',y='Ralative Luciferase Activity \n(Ratio of fLuc/rLuc)',
+           title = "Dual Luciferase Reporter Assay",fill="",
+           subtitle = "Control gruop has been set to 1.",
+           caption = "Plot by Syngenetech")
     
     #仪器与试剂
     #仪器
@@ -2316,22 +2303,22 @@ cck8 <- function(raw_data1,raw_data2){
       body_add_par(value = "实验方法和分组", style = "heading 1") %>%
       body_add_par("实验方法",style='heading 2')  %>%
       body_add_par('实验原理：萤光素酶和其底物这一生物发光体系，可以非常灵敏、高效地检测基因的表达。通常把感兴趣基因的转录调控元件或5‘启动子区克隆在Luciferase的上游，或把3’-UTR区克隆在Luciferase的下游等，构建成报告基因(Reporter Gene)质粒。然后转染细胞，用适当药物等处理细胞后裂解细胞，测定萤光素酶活性。通过萤光素酶活性的高低来判断药物处理等对目的基因的转录调控作用。Renilla Luciferase相对更多地被用作转染效率的内参，以消除细胞数量和转染效率的差异。
-                   ',style='Normal')%>%
-      body_add_par('',style = 'Normal')%>%
-      body_add_par('具体步骤：',style = 'Normal')%>%
-      body_add_par('1、裂解细胞：将报告基因细胞裂解液充分混匀后，加入报告基因细胞裂解液，充分裂解细胞。',style='Normal')%>%
-      body_add_par('2、融解萤火虫萤光素酶检测试剂和海肾萤光素酶检测缓冲液，并达到室温。海肾萤光素酶检测底物(100X)置于冰浴或冰盒上备用。',style='Normal')%>%
-      body_add_par('3、按照每个样品需100微升的量，取适量海肾萤光素酶检测缓冲液，按照1:100加入海肾萤光素酶检测底物(100X)配制成海肾萤光素酶检测工作液。',style='Normal')%>%
+                   ',style='chinese_style')%>%
+      body_add_par('',style = 'chinese_style')%>%
+      body_add_par('具体步骤：',style = 'chinese_style')%>%
+      body_add_par('1、裂解细胞：将报告基因细胞裂解液充分混匀后，加入报告基因细胞裂解液，充分裂解细胞。',style='chinese_style')%>%
+      body_add_par('2、融解萤火虫萤光素酶检测试剂和海肾萤光素酶检测缓冲液，并达到室温。海肾萤光素酶检测底物(100X)置于冰浴或冰盒上备用。',style='chinese_style')%>%
+      body_add_par('3、按照每个样品需100微升的量，取适量海肾萤光素酶检测缓冲液，按照1:100加入海肾萤光素酶检测底物(100X)配制成海肾萤光素酶检测工作液。',style='chinese_style')%>%
       body_add_par('4、上机检测萤光强度，测定间隔设为2秒，测定时间设为10秒。
-                   ',style='Normal')%>%
+                   ',style='chinese_style')%>%
       body_add_par('5、每个样品测定时，取样品20-100微升(如果样品量足够，请加入100微升；如果样品量不足可以适当减少用量，但同批样品的使用量宜保持一致)。
-                   ',style='Normal')%>%
+                   ',style='chinese_style')%>%
       body_add_par('6、加入100微升萤火虫萤光素酶检测试剂，用枪打匀或用其它适当方式混匀后测定RLU(Relative Light Unit)。以报告基因细胞裂解液为空白对照。
-                   ',style='Normal')%>%
+                   ',style='chinese_style')%>%
       body_add_par('7、在完成上述测定萤火虫萤光素酶步骤后，加入100微升海肾萤光素酶检测工作液，用枪打匀或用其它适当方式混匀后测定RLU。
-                   ',style='Normal')%>%
+                   ',style='chinese_style')%>%
       body_add_par('8、在以海肾萤光素酶为内参的情况下，用萤火虫萤光素酶测定得到的RLU值（fluc）除以海肾萤光素酶测定得到的RLU（rluc）值。根据得到的比值来比较不同样品间目的报告基因的激活程度。如果以萤火虫萤光素酶为内参，也可以进行类似计算。
-                   ',style='Normal')%>%
+                   ',style='chinese_style')%>%
       body_add_break(pos = "after")%>%
       
       
@@ -2352,10 +2339,7 @@ cck8 <- function(raw_data1,raw_data2){
       body_add_break(pos = "after")%>%
       
       body_add_par(value = "图表绘制", style = "heading 2") %>% 
-      body_add_gg(value = p ,style = "heading 3")%>%
-      body_add_fpar(fpar(
-        '图3.3.1  双萤光素酶报告基因统计图',
-        fp_p=fp_par(text.align = 'center')))%>%
+      body_add_gg(value = p ,style = "heading 3",height = 4)%>%
       body_add_break(pos = "after")%>%
       
       body_add_par(value = "实验结论", style = "heading 2")
