@@ -19,7 +19,7 @@ ui <- fluidPage(
     column(6,wellPanel(
     selectInput('input_type','选择报告种类',
                 c('cck8','qRT-PCR','reportor_gene_assay','gene_kd_oe','vector_vrius','colony_formation'
-                  ,'wound_healing','transwell','cell_cycle','cell_apoptosis','Co-IP'))
+                  ,'wound_healing','transwell','cell_cycle','cell_apoptosis','Co-IP','EdU','migration'))
   ))),
   fluidRow(
     column(4,wellPanel(fileInput('file1','上传excel模板',
@@ -80,7 +80,13 @@ server <- function(input, output) {
                                        placeholder = 'no more needed'),
            'Co-IP'= fileInput("file2","coip实验结果",
                                        multiple = TRUE,
-                                       placeholder = 'coip实验结果.png')
+                                       placeholder = 'coip实验结果.png'),
+           'EdU'= fileInput("file2","目前无需额外上传",
+                            multiple = TRUE,
+                            placeholder = 'no more needed'),
+           'migration'= fileInput("file2","目前无需额外上传",
+                            multiple = TRUE,
+                            placeholder = 'no more needed')
     )
   })
   

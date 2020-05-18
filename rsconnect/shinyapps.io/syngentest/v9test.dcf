@@ -5,9 +5,9 @@ account: syngentest
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1622569
-bundleId: 2896402
+bundleId: 3129483
 url: https://syngentest.shinyapps.io/v9test/
-when: 1584584965.26325
+when: 1589161438.10303
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .RData|cc.docx|vrius.R|克隆形成 实验报告 .xlsx|克隆形成模板.docx|划痕实验报告范例.xlsx|划痕实验模板.docx|细胞侵袭结题报告范例2.docx|data/.DS_Store
+ignoredFiles: .RData|~$副本双萤光素酶报告实验范例(1).xlsx|template.R|vrius.R
