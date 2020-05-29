@@ -34,7 +34,10 @@ ui <- fluidPage(
   fluidRow(column(3, verbatimTextOutput("value1",placeholder = TRUE))),
   h5("已上传图片列表："),
   fluidRow(column(3, verbatimTextOutput("value2",placeholder = TRUE))),
-      downloadButton(outputId = "download", label = "在此处下载报告")
+      downloadButton(outputId = "download", label = "在此处下载报告"),
+  hr(),
+  tags$a(href = "https://www.teambition.com/task/5e3bb321f931af0021568a0b",
+  "点此链接下载Excel模板集", target = "_blank")
 )
 
 

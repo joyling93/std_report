@@ -1720,7 +1720,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
   
 ############################
 #                          #
-#          gene_kd         #
+#        gene_kd_oe        #
 #                          #
 ############################
 
@@ -1839,7 +1839,7 @@ gene_kd_oe <- function(raw_data1,image_path,image_name){
       body_add_par('实验原理：为了探讨目的基因在特定细胞中发挥的生物学功能，本实验通过构建目的基因沉默/过表达慢病毒质粒，利用第二代慢病毒包装系统制备、浓缩慢病毒液，并感染特定细胞株。经过抗性或流式筛选获得敲低/过表达目的基因的特定细胞系。',style='Normal')%>%
       body_add_par('',style = 'Normal')%>%
       body_add_par('具体步骤（抗性筛选）：',style = 'Normal')%>%
-      body_add_par('1、6 孔板铺板细胞数 6×10^5，按 MOI=15 每孔加 100μl 病毒液，第二天换液继续培养，培养第三天加 puromycin 进行抗性筛选，待对照野生型细胞全部筛死时停止药筛，即可获得稳定敲低/过表达目的基因的细胞株以及对照空载体细胞株。',style='Normal')%>%
+      body_add_par('1、6 孔板铺板细胞数 6×10^5，按 MOI=15 每孔加 100μl 病毒液，第二天换液继续培养，培养第三天加 puromycin 进行抗性筛选，待对照野生型细胞全部筛死时停止药筛，即可获得稳定沉默/过表达目的基因的细胞株以及对照空载体细胞株。',style='Normal')%>%
       body_add_par('2、收集生长状态良好的目的细胞，使用 Trizol 试剂提取总 RNA，然后用反转录试剂盒反转录出 cDNA，用目的基因定量引物对进行 RT-qPCR 检测野生型、目的细胞系以及对照细胞系中的目的基因的表达情况。',style='Normal')%>%
       body_add_break(pos = "after")%>%
       body_add_par("实验分组",style='heading 2')  %>%
@@ -1982,7 +1982,6 @@ qRTPCR <- function(raw_data1,raw_data2,image_path,image_name){
   
   mean_sd_ft <- 
     inner_join(sample_data,mean_sd_data, by = c('分组名称',"相关基因"))%>%
-    select(-6)%>%
     flextable() %>%
     color(i=~QC>=0.5,j=~QC, color = "red")%>%
     set_header_labels(相关基因.x='相关基因',分组名称='实验分组',Mean='平均值',SD='标准差',`1`='复孔1',`2`='复孔2',`3`='复孔3')%>%

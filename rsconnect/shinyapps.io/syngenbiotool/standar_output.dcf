@@ -5,9 +5,9 @@ account: syngenbiotool
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1595693
-bundleId: 3150567
+bundleId: 3194251
 url: https://syngenbiotool.shinyapps.io/standar_output/
-when: 1589525147.63957
+when: 1590564120.75656
 asMultiple: FALSE
 asStatic: FALSE
 ignoredFiles: .RData|~$副本双萤光素酶报告实验范例(1).xlsx|template.R|vrius.R
