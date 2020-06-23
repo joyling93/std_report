@@ -16,11 +16,13 @@ ui <- fluidPage(
   title = "standar output",
   hr(),
   fluidRow(
-    column(6,wellPanel(
+    column(4,wellPanel(
     selectInput('input_type','选择报告种类',
                 c('cck8','qRT-PCR','reportor_gene_assay','gene_kd_oe','vector_vrius','colony_formation'
                   ,'wound_healing','transwell','cell_cycle','cell_apoptosis','Co-IP','EdU','migration'))
-  ))),
+  )),
+    uiOutput('uip')
+  ),
   fluidRow(
     column(4,wellPanel(fileInput('file1','上传excel模板',
                                  multiple = FALSE,
@@ -36,14 +38,49 @@ ui <- fluidPage(
   fluidRow(column(3, verbatimTextOutput("value2",placeholder = TRUE))),
       downloadButton(outputId = "download", label = "在此处下载报告"),
   hr(),
-  tags$a(href = "https://www.teambition.com/task/5e3bb321f931af0021568a0b",
-  "点此链接下载Excel模板集", target = "_blank")
+  tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/58081fe94863251f4269aaf6/work/5ece14adfe4caa0021bc21a7",
+  "点此链接下载所有Excel模板集", target = "_blank")
 )
 
 
 
 # Define server logic to read selected file ----
 server <- function(input, output) {
+  output$uip <- renderUI({
+    if (is.null(input$input_type))
+      return()
+    
+    # Depending on input$input_type, we'll generate a different
+    # UI component and send it to the client.
+    switch(input$input_type,
+           "cck8" = tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d943",
+                           "点此链接下载Excel模板", target = "_blank"),
+           "qRT-PCR" = tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d942",
+                              "点此链接下载Excel模板", target = "_blank"),
+           "reportor_gene_assay" =  tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d947",
+                                           "点此链接下载Excel模板", target = "_blank"),
+           "gene_kd_oe" = tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d93c",
+                                 "点此链接下载Excel模板", target = "_blank"),
+           'vector_vrius'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d944",
+                                  "点此链接下载Excel模板", target = "_blank"),
+           'colony_formation'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d93d",
+                                      "点此链接下载Excel模板", target = "_blank"),
+           'wound_healing'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d945",
+                                   "点此链接下载Excel模板", target = "_blank"),
+           'transwell'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d93f",
+                               "点此链接下载Excel模板", target = "_blank"),
+           'cell_cycle'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d941",
+                                "点此链接下载Excel模板", target = "_blank"),
+           'cell_apoptosis'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d93e",
+                                    "点此链接下载Excel模板", target = "_blank"),
+           'Co-IP'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d93b",
+                           "点此链接下载Excel模板", target = "_blank"),
+           'EdU'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d946",
+                         "点此链接下载Excel模板", target = "_blank"),
+           'migration'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d940",
+                               "点此链接下载Excel模板", target = "_blank")
+           )
+  })
   output$ui <- renderUI({
     if (is.null(input$input_type))
       return()
@@ -61,8 +98,8 @@ server <- function(input, output) {
                                               multiple = TRUE,
                                               placeholder = 'no more needed'),
            "gene_kd_oe" = fileInput("file2", "上传 病毒感染图片、细胞PCR检测结果 和 wb实验结果(可选) 图片",
-                                 multiple = TRUE,
-                                 placeholder = 'eg:病毒感染图片.png,细胞PCR检测结果.png'),
+                                    multiple = TRUE,
+                                    placeholder = 'eg:病毒感染图片.png,细胞PCR检测结果.png'),
            'vector_vrius'= fileInput("file2", "上传 载体图谱、靶序列测序结果 或 酶切鉴定结果 图片",
                                      multiple = TRUE,
                                      placeholder = 'eg: 载体图谱.png,靶序列测序结果.png'),
@@ -70,29 +107,28 @@ server <- function(input, output) {
                                          multiple = TRUE,
                                          placeholder = 'no more needed'),
            'wound_healing'= fileInput("file2","目前无需额外上传",
-                                         multiple = TRUE,
-                                         placeholder = 'no more needed'),
-           'transwell'= fileInput("file2","目前无需额外上传",
                                       multiple = TRUE,
                                       placeholder = 'no more needed'),
-           'cell_cycle'= fileInput("file2","目前无需额外上传",
+           'transwell'= fileInput("file2","目前无需额外上传",
                                   multiple = TRUE,
                                   placeholder = 'no more needed'),
+           'cell_cycle'= fileInput("file2","目前无需额外上传",
+                                   multiple = TRUE,
+                                   placeholder = 'no more needed'),
            'cell_apoptosis'= fileInput("file2","目前无需额外上传",
                                        multiple = TRUE,
                                        placeholder = 'no more needed'),
            'Co-IP'= fileInput("file2","coip实验结果",
-                                       multiple = TRUE,
-                                       placeholder = 'coip实验结果.png'),
+                              multiple = TRUE,
+                              placeholder = 'coip实验结果.png'),
            'EdU'= fileInput("file2","目前无需额外上传",
                             multiple = TRUE,
                             placeholder = 'no more needed'),
            'migration'= fileInput("file2","目前无需额外上传",
-                            multiple = TRUE,
-                            placeholder = 'no more needed')
+                                  multiple = TRUE,
+                                  placeholder = 'no more needed')
     )
   })
-  
   output$value1 <- renderText({
     print(as.character(input$file1$name))
   })
