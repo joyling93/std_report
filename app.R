@@ -18,8 +18,8 @@ ui <- fluidPage(
   fluidRow(
     column(4,wellPanel(
     selectInput('input_type','选择报告种类',
-                c('cck8','qRT-PCR','reportor_gene_assay','gene_kd_oe','vector_vrius','colony_formation'
-                  ,'wound_healing','transwell','cell_cycle','cell_apoptosis','Co-IP','EdU','migration'))
+                c('CCK8_MTT','qPCR','reporter_gene_assay','gene_kd_oe','vector_vrius','colony_formation'
+                  ,'wound_healing','Transwell_invasion','cell_cycle','cell_apoptosis','Co-IP','EdU_Br','Transwell_migration'))
   )),
     uiOutput('uip')
   ),
@@ -53,11 +53,11 @@ server <- function(input, output) {
     # Depending on input$input_type, we'll generate a different
     # UI component and send it to the client.
     switch(input$input_type,
-           "cck8" = tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d943",
+           "CCK8_MTT" = tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d943",
                            "点此链接下载Excel模板", target = "_blank"),
-           "qRT-PCR" = tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d942",
+           "qPCR" = tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d942",
                               "点此链接下载Excel模板", target = "_blank"),
-           "reportor_gene_assay" =  tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d947",
+           "reporter_gene_assay" =  tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d947",
                                            "点此链接下载Excel模板", target = "_blank"),
            "gene_kd_oe" = tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d93c",
                                  "点此链接下载Excel模板", target = "_blank"),
@@ -67,7 +67,7 @@ server <- function(input, output) {
                                       "点此链接下载Excel模板", target = "_blank"),
            'wound_healing'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d945",
                                    "点此链接下载Excel模板", target = "_blank"),
-           'transwell'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d93f",
+           'Transwell_invasion'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d93f",
                                "点此链接下载Excel模板", target = "_blank"),
            'cell_cycle'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d941",
                                 "点此链接下载Excel模板", target = "_blank"),
@@ -75,9 +75,9 @@ server <- function(input, output) {
                                     "点此链接下载Excel模板", target = "_blank"),
            'Co-IP'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d93b",
                            "点此链接下载Excel模板", target = "_blank"),
-           'EdU'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d946",
+           'EdU_Br'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d946",
                          "点此链接下载Excel模板", target = "_blank"),
-           'migration'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d940",
+           'Transwell_migration'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d940",
                                "点此链接下载Excel模板", target = "_blank")
            )
   })

@@ -136,7 +136,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       )+
       scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
       labs(x='',y='Number of Dots',title = "Migration Assay",
-           caption = "Plot by Syngenetech")
+           caption = "Plot by syngentech")
     
     #仪器与试剂
     #仪器
@@ -347,7 +347,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       labs(x='',y='Proliferation Rate \n(Ratio of EdU/hoechst)',
            title = "EdU Cell Proliferation Assay",fill="",
            subtitle = "Ratio is calculated by EdU/hoechst",
-           caption = "Plot by Syngenetech")
+           caption = "Plot by syngentech")
     
     #仪器与试剂
     #仪器
@@ -630,7 +630,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
             axis.text.y = element_text(size = 12),
             legend.position="right",
       )+
-      scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
+      scale_fill_viridis(option = 'E',discrete = T,alpha = 0.9)+
       labs(x='',y='Cell Ratio',title = "Cell Apoptosis Assay",
            #subtitle = "Apoptosis Ratio = early apoptosis + late apoptosis",
            caption = "Plot by Syngentech",fill='Class'
@@ -712,11 +712,11 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     data_head <- raw_data1[,1]
     ex_group <- str_which(data_head, '实验分组')
     contract_num <- str_which(data_head, '合同号')
+    statistic_test_group <- str_which(data_head, '显著性检验分组')
     fontname <- "Arial"
     
-    
     #实验分组
-    assay_group_data <-  raw_data1[(ex_group+2):(length(data_head)),]
+    assay_group_data <-  raw_data1[(ex_group+3):statistic_test_group-1,]
     colnames(assay_group_data) <- raw_data1[(ex_group+1),]
     exp_group_ft <- assay_group_data %>%
       flextable()%>%
@@ -726,6 +726,12 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       fontsize(size = 7.5,part = 'all')%>%
       autofit(add_h = 0.2,add_w = 0.2)%>%
       font(fontname = fontname, part = "all")
+    
+    #确定统计参数
+    statistic_test_data <- raw_data1[str_which(raw_data1[,2],'vs'),1:3]
+    compare_group <- paste(statistic_test_data[,1],statistic_test_data[,3],sep = '/',collapse = ',')
+    compare_group_list <- strsplit(strsplit(compare_group,',')[[1]],'/')
+    
     
     #去除na和极值
     z <- raw_data2%>%
@@ -765,6 +771,36 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       height(part = 'foot',height = 1)%>%
       font(fontname = fontname, part = "all")
     
+    #显著性
+    p_value <- as.data.frame(do.call(cbind,lapply(compare_group_list,function(x){
+      y <- z %>%
+        filter(实验分组==x[1]|实验分组==x[2])%>%
+        group_by(细胞周期)
+      p_value <- unlist(lapply(split(y,y$细胞周期),function(x){
+        if(var.test(value~实验分组,x)$p.value>=0.05){
+          var_value=1
+        }else{
+          var_value=0}
+        round(t.test(value~实验分组,x,var.equal =var_value)$p.value,digits = 3)
+      }))
+    })))
+    colnames(p_value) <- unlist(lapply(compare_group_list,function(x){
+      paste(x[1],'vs',x[2])
+    }))
+    p_value_table <-cbind('细胞周期'=rownames(p_value),p_value)  
+    
+    
+    p_value_ft <-  p_value_table%>%
+      flextable() %>%
+      add_header_lines("表3.2.1  显著性差异检验")%>%
+      footnote(j=-1,part = 'header',
+               value = as_paragraph('ns：P_value>0.05\n *：P_value≤0.05\n **：P_value≤0.01\n ***：P_value≤0.001\n ****：P_value≤0.0001\n')) %>%
+      align(align = 'center',part = 'all') %>%
+      fontsize(size = 9,part = 'all')%>%
+      autofit(add_h = 0.2) %>%
+      width(j = 1, width = 1.8)%>%
+      height(i=1,height = 1.7,part = 'foot')%>%
+      font(fontname = fontname, part = "all")
     
     #统计作图
     p <- ggplot(mean_sd_data, aes(x=实验分组, y=Mean,fill =细胞周期))+
@@ -783,7 +819,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       )+
       scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
       labs(x='',y='Cell Ratio',fill='Cell Cycle',title = "Cell Cycle Assay",
-           caption = "Plot by Syngenetech")
+           caption = "Plot by Syngentech")
     
     #仪器与试剂
     #仪器
@@ -835,8 +871,8 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       body_add_flextable(exp_group_ft)%>%
       cursor_bookmark("mean_sd")%>%
       body_add_flextable(mean_sd_ft)%>%
-      #cursor_bookmark("raw_data")%>%
-      #body_add_flextable(raw_data_ft)%>%
+      cursor_bookmark("raw_data")%>%
+      body_add_flextable(p_value_ft)%>%
       #cursor_bookmark("conclusion")%>%
       #body_add_flextable(conclusion_ft)%>%
       cursor_bookmark("ggplot")%>%
@@ -981,7 +1017,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       )+
       scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
       labs(x='',y='Number of Dots',title = "Transwell Assay",
-           caption = "Plot by Syngenetech")
+           caption = "Plot by syngentech")
     
     #仪器与试剂
     #仪器
@@ -1173,7 +1209,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       )+
       scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
       labs(x='',y='Wound Healing Rate(%)',title = "Wound Healing Assay",subtitle = "Wound Healing Rate(%)= Cellular Migration Area/Prcellular Migration Area*100",
-           caption = "Plot by Syngenetech") 
+           caption = "Plot by syngentech") 
     
     
     
@@ -1414,7 +1450,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       )+
       scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
       labs(x='',y='Number of Clones',title = "Colony Formation",
-           caption = "Plot by Syngenetech") 
+           caption = "Plot by syngentech") 
     
     #仪器与试剂
     #仪器
@@ -1743,6 +1779,7 @@ gene_kd_oe <- function(raw_data1,image_path,image_name){
       fontsize(size = 7.5,part = 'all')%>%
       autofit(add_h = 0.2,add_w=0.5)%>%
       width(j = c(1,4,5), width = 0.8)%>%
+      merge_v(j=1)%>%
       font(fontname = fontname, part = "all")
     
     #仪器与试剂
@@ -2025,7 +2062,7 @@ qRTPCR <- function(raw_data1,raw_data2,image_path,image_name){
     )+
     scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
     labs(x='',y='Ralative mRNA Level',title = "qRT-PCR",subtitle = "Control gruop has been set to 1.",
-         caption = "Plot by Syngenetech",fill="Gene")
+         caption = "Plot by syngentech",fill="Gene")
   
   #仪器与试剂
   #仪器
