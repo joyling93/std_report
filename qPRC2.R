@@ -523,7 +523,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       body_add_flextable(regent_ft)%>%
       cursor_bookmark("antibody_info")%>%
       body_add_flextable(antibody_ft)%>%
-      cursor_bookmark("exp_froup")%>%
+      cursor_bookmark("exp_group")%>%
       body_add_flextable(group_ft)%>%
       cursor_bookmark("conclusion")%>%
       body_add_flextable(conclusion_ft)

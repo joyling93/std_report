@@ -139,4 +139,128 @@ print(my_doc,target = './data/vector&vrius_templete.docx')
 
 
 
+#细胞产品说明书
+my_doc <- read_docx('./data/template.docx')
+my_doc %>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("contract_num")%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par("细胞产品说明",style  = 'Title')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  #body_add_par(value = '项目名称：细胞增殖实验(EdU）',style  = 'Subtitle')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("date")%>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "产品内容", style = "heading 1") %>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("table1")%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("table2")%>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "注意事项", style = "heading 1") %>%
+  body_add_par("冻存细胞",style='heading 2')  %>%
+  body_add_par('收到细胞后，请检查产品内容，如有异常（如：缺货、无干冰等）请拍照记录。
+               ',style='chinese_style')%>%
+  body_add_par('请于收货后1周内复苏细胞, 建议按照“客户自用培养基：产品附送培养基=3:7/7:3/10:0”的方式进行3次传代，避免细胞因培养基成分骤变而状态异常。
+               ',style='chinese_style')%>%
+  body_add_par("新鲜细胞",style='heading 2')  %>%
+  body_add_par('收到细胞后，请检查培养瓶是否完好，如有异常（如：缺货、漏液等）请拍照记录
+               ',style='chinese_style')%>%
+  body_add_par('建议按照“客户自用培养基：产品附送培养基=3:7/7:3/10:0”的方式进行3次传代，避免细胞因培养基成分骤变而状态异常。
+               ',style='chinese_style')%>%
+  body_add_par(value = "细胞冻存与复苏方法", style = "heading 1") %>%
+  body_add_par("细胞冻存",style='heading 2')  %>%
+  body_add_par('当细胞汇合度达到 70% 时，常规消化收集至15 mL离心管中，800 rpm 离心 5 min，弃掉原培养基，加入冻存液重悬。将约 1.5 mL 悬浮液缓缓加入到冻存管，标记细胞种类和冻存时间后放入冻存盒中 -80 ℃ 梯度降温。约 24 h后取出，冻存于液氮罐，记录存放位置。
+               ',style='chinese_style')%>%
+  body_add_par("细胞复苏",style='heading 2')  %>%
+  body_add_par('设置水浴锅温度37 ℃。取冻存细胞放于37 ℃水中，迅速摇动使其快速解冻。解冻之后，将细胞转移至15 mL离心管，加入3 mL无菌PBS溶液，800 rpm离心5 min，去上清，加培养基4 mL，重悬后转移至60 mm培养皿，24 h后更换新的培养基，根据细胞密度传代或继续培养。
+               ',style='chinese_style')  
+
+
+
+
+print(my_doc,target = './data/cell_product_templete.docx')
+
+
+#细胞支原体检测
+my_doc <- read_docx('./data/template.docx')
+my_doc %>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("contract_num")%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par("细胞支原体检测",style  = 'Title')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  #body_add_par(value = '项目名称：细胞增殖实验(EdU）',style  = 'Subtitle')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("date")%>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "细胞信息", style = "heading 1") %>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("table1")%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par(value = "检测结果", style = "heading 1") %>%
+  body_bookmark('pic')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par(value = "注：本项目采用 Vazyme KIT 方法检测细胞培养物支原体，但是由于支原体种类繁多，检测方法多样，该结果仅供参考。
+               ", style = "chinese_style") 
+
+
+print(my_doc,target = './data/cell_myco_templete.docx')
+
+
+#wb
+my_doc <- read_docx('./data/template.docx')
+my_doc %>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("contract_num")%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par("项目结题报告",style  = 'Title')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par(value = '项目名称：western_blot蛋白质印迹实验',style  = 'Subtitle')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("date")%>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "仪器与试剂", style = "heading 1") %>%
+  body_add_par("实验仪器",style='heading 2')  %>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("equipment_info")%>%
+  body_add_par("实验试剂",style='heading 2')  %>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("regent_info")%>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "实验方法和分组", style = "heading 1") %>%
+  body_add_par("实验方法",style='heading 2')  %>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par("实验分组",style='heading 2')  %>%
+  body_add_par('',style = 'pic_style')%>%
+  body_bookmark("exp_group") %>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "实验结果", style = "heading 1") %>% 
+  body_bookmark("result")
+print(my_doc,target = './data/wb_templete.docx')
 
