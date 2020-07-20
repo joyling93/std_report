@@ -1,9 +1,6 @@
 trans <-function(raw_data1,raw_data2,image_path,image_name){
-  ############################
-  #                          #
-  #         migration        #
-  #                          #
-  ############################ 
+  
+  ## migration 
   migration <- function(raw_data1,raw_data2,image_path,image_name){
     #表头定位
     raw_data1 <- raw_data1
@@ -202,11 +199,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     my_doc
   }
   
-  ############################
-  #                          #
-  #           EdU            #
-  #                          #
-  ############################ 
+  ## EdU
   EdU <- function(raw_data1,raw_data2,image_path,image_name){
     raw_data1 <- raw_data1
     raw_data2 <- raw_data2
@@ -415,11 +408,8 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     
     my_doc
   }
-  ############################
-  #                          #
-  #          coip            #
-  #                          #
-  ############################ 
+  
+  ## coip
   CoIP <- function(raw_data1,raw_data2,image_path,image_name){
     #表头定位
     raw_data1 <- raw_data1
@@ -544,11 +534,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     my_doc
   }
   
-  ############################
-  #                          #
-  #     cell_apoptosis       #
-  #                          #
-  ############################ 
+  ## cell_apoptosis
   cell_apoptosis <- function(raw_data1,raw_data2,image_path,image_name){
     #表头定位
     raw_data1 <- raw_data1
@@ -699,12 +685,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     my_doc
   }
   
-  
-  ############################
-  #                          #
-  #        cell_cycle        #
-  #                          #
-  ############################ 
+  ## cell_cycle 
   cell_cycle <- function(raw_data1,raw_data2,image_path,image_name){
     #表头定位
     raw_data1 <- raw_data1
@@ -880,11 +861,8 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     
     my_doc
   }
-  ############################
-  #                          #
-  #        transwell         #
-  #                          #
-  ############################ 
+  
+  ## transwell
   transwell <- function(raw_data1,raw_data2){
     #表头定位
     raw_data1 <- raw_data1
@@ -1082,12 +1060,8 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     
     my_doc
   }
-
-  ############################
-  #                          #
-  #     wound_healing        #
-  #                          #
-  ############################ 
+  
+  ## wound_healing
   wound_healing <- function(raw_data1,raw_data2,image_path,image_name){
     #表头定位
     raw_data1 <- raw_data1
@@ -1310,11 +1284,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     my_doc
   }
   
-############################
-#                          #
-#     colony_formation     #
-#                          #
-############################ 
+  ## colony_formation
   colony_formation <- function(raw_data1,raw_data2){
     #表头定位
     raw_data1 <- raw_data1
@@ -1516,12 +1486,8 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     my_doc
   }
   
-
-  ############################
-  #                          #
-  #     vector_vrius         #
-  #                          #
-  ############################
+  
+  ## vector_vrius
   vector_vrius <- function(raw_data1,raw_data2,image_path,image_name){
     #表头定位
     raw_data1 <- raw_data1
@@ -1728,15 +1694,10 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     })
     body_replace_all_text(my_doc,'#.*?#','',only_at_cursor =FALSE)
     my_doc
-    }
+  }
   
-############################
-#                          #
-#        gene_kd_oe        #
-#                          #
-############################
-
-gene_kd_oe <- function(raw_data1,image_path,image_name){
+  ## gene_kd_oe
+  gene_kd_oe <- function(raw_data1,image_path,image_name){
     #表头定位
     raw_data1 <- raw_data1
     data_head <- raw_data1[,1]
@@ -1845,7 +1806,7 @@ gene_kd_oe <- function(raw_data1,image_path,image_name){
       body_add_flextable(value = equip_ft) %>%
       body_add_par("实验试剂",style='heading 2')  %>%
       body_add_flextable(value = regent_ft) %>%
-
+      
       
       body_add_par(value = "实验方法和分组", style = "heading 1") %>%
       body_add_par("实验方法",style='heading 2')  %>%
@@ -1906,863 +1867,1154 @@ gene_kd_oe <- function(raw_data1,image_path,image_name){
         body_add_par(paste0('结果：',raw_data1[conclution,2]),style = 'Normal')
     }
     my_doc
-    }
-  
-#############################
-###          qRTPCR      ####
-#############################
-qRTPCR <- function(raw_data1,raw_data2,image_path,image_name){
-  #表头定位
-  raw_data1 <- raw_data1
-  raw_data2 <- raw_data2
-  data_head <- raw_data1[,1]
-  detail_info <- str_which(data_head, '引物信息')
-  ex_group <- str_which(data_head, '实验分组')
-  contract_num <- str_which(data_head, '合同号')
-  statistic_p <- str_which(data_head, '统计检验参数')
-  paried <- str_which(data_head, '是否配对')
-  statistic_test_group <- str_which(data_head, '显著性检验分组')
-  fontname <- "Arial"
-  nor_group <- str_which(data_head, '归一化组')
-  
-  #实验分组
-  assay_group_data <-  raw_data1[(ex_group+2):(statistic_p-1),]
-  colnames(assay_group_data) <- raw_data1[(ex_group+1),]
-  assay_group_ft <- assay_group_data %>%
-    flextable(col_keys=c('相关基因','实验分组名称','检测细胞','实验描述'))%>%
-    add_header_lines("表2.2.2  分组信息表")%>%
-    merge_v(j=1)%>%
-    border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_h = 0.2,add_w=0.5)%>%
-    font(fontname = fontname, part = "all")
-  
-  #实验信息
-  detail_info_data <-  raw_data1[(detail_info+2):(ex_group-1),]
-  colnames(detail_info_data) <- raw_data1[(detail_info+1),]
-  detail_info_ft <- detail_info_data %>%
-    flextable()%>%
-    add_header_lines("表2.2.1  引物信息表")%>%
-    align(i=1,align = 'center',part = 'head')%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_h = 0.2,add_w=0.2)%>%
-    font(fontname = fontname, part = "all")
-  
-  
-  #确定统计参数
-  statistic_test_data <- raw_data1[str_which(raw_data1[,2],'vs'),1:3]
-  compare_group <- paste(statistic_test_data[,1],statistic_test_data[,3],sep = '/',collapse = ',')
-  compare_group_list <- strsplit(strsplit(compare_group,',')[[1]],'/')
-  
-  #去除na和极值
-  omit_extream <- function(x){
-    y <- x[order(abs(x-quantile(x,0.5,na.rm = TRUE)))]
-    y <- y[1:3]
-  } 
-  
-  nor_matrix <- raw_data2[,str_which(colnames(raw_data2),'复孔')]-raw_data2[,str_which(colnames(raw_data2),'内参')]
-  target_data<- raw_data2%>%
-    select(1:3)%>%
-    cbind(t(apply(nor_matrix,1,omit_extream)))%>%
-    gather(-(1:3),key='sample',value='value1')
-  
-  nor_data <- target_data%>%
-    group_by(相关基因)%>%
-    filter(归一化组=='是')%>%
-    summarise(mean=mean(value1))
-  
-  z <- target_data%>%
-    group_by(相关基因)%>%
-    mutate(value=round(2^(as.numeric(nor_data[nor_data$相关基因==unique(相关基因),2])-value1),digits = 3))%>%
-    arrange(相关基因,分组名称)%>%
-    select(相关基因,分组名称,sample,value)%>%
-    ungroup()
-  
-  #均值标准差表
-  mean_sd_data <- z %>% 
-    group_by(相关基因,分组名称)%>%
-    summarise(
-      Mean=round(mean(value,na.rm = TRUE),digits = 3),
-      SD=round(sd(value,na.rm = TRUE),digits = 3),
-      QC=round(sd(value,na.rm = TRUE)/mean(value,na.rm = TRUE),digits = 3)
-    )
-  
-  sample_data <- z%>%
-    group_by(相关基因,分组名称)%>%
-    spread(sample,value)
-  
-  mean_sd_ft <- 
-    inner_join(sample_data,mean_sd_data, by = c('分组名称',"相关基因"))%>%
-    flextable() %>%
-    color(i=~QC>=0.5,j=~QC, color = "red")%>%
-    set_header_labels(相关基因.x='相关基因',分组名称='实验分组',Mean='平均值',SD='标准差',`1`='复孔1',`2`='复孔2',`3`='复孔3')%>%
-    footnote(j=~QC,part = 'header',value = as_paragraph('QC值为标准差/平均值，数值越大表明该组实验数据波动性越高，其中≥0.5的值会被标记为红色'))%>%
-    merge_v(j=1)%>%
-    border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
-    add_header_lines("表3.1.1 相对mRNA表达量平均值和标准差")%>%
-    compose(part = 'header',i=1,value = as_paragraph('表3.1.1 相对mRNA表达量平均值和标准差(2',as_sup('-∆∆Ct'),')'))%>%
-    align(align = 'center',part = 'all') %>%
-    fontsize(size = 9,part = 'all')%>%
-    autofit(add_h = 0.2) %>%
-    width(j = 1, width = 1.5)%>%
-    height(part = 'foot',height = 1)%>%
-    font(fontname = fontname, part = "all")
-  
-  
-  #显著性
-  p_value <- do.call(rbind,lapply(compare_group_list,function(x){
-    y <- z %>%
-      filter(分组名称==x[1]|分组名称==x[2])
-    if(var.test(value~分组名称,data=y)$p.value>=0.05){
-      var_value=1
-    }else{
-      var_value=0}
-    round(t.test(value~分组名称,y,var.equal =var_value)$p.value,digits = 3)
-  }))
-  p_value_table <- data.frame('组1'=statistic_test_data[,1],'组2'=statistic_test_data[,3],p_value )
-  sig_symbol <- sapply(p_value_table$p_value,function(x){
-    ifelse(x>0.05,'ns',
-           ifelse(x>=0.01,'*',
-                  ifelse(x>=0.001,'**',
-                         ifelse(x>=0.0001,'***','****'))))
-  })
-  p_value_table$'sig_symbol' <- sig_symbol
-  
-  p_value_ft <-  p_value_table%>%
-    flextable() %>%
-    add_header_lines("表3.2.1  显著性差异检验")%>%
-    set_header_labels(sig_symbol='显著性')%>%
-    footnote(j=3,part = 'header',
-             value = as_paragraph('ns：P_value>0.05\n *：P_value≤0.05\n **：P_value≤0.01\n ***：P_value≤0.001\n ****：P_value≤0.0001\n')) %>%
-    align(align = 'center',part = 'all') %>%
-    fontsize(size = 9,part = 'all')%>%
-    autofit(add_h = 0.2) %>%
-    width(j = 1:2, width = 1.8)%>%
-    width(j = 3:4, width = 0.8)%>%
-    height(i=1,height = 1.7,part = 'foot')%>%
-    font(fontname = fontname, part = "all")
-  
-  #统计作图
-  p <- ggplot(mean_sd_data, aes(x=分组名称, y=Mean,fill =相关基因))+
-    geom_bar(stat = "identity",position="dodge",width = 0.5)+
-    geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
-                  position=position_dodge(0.8),width=.2,color='grey')+
-    scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
-    theme(plot.title = element_text(face="bold"),
-          plot.title.position = "panel",
-          plot.subtitle = element_text(color = "grey"),
-          panel.background = element_rect(fill = NA),
-          axis.title= element_text(size = 12),
-          axis.text.x = element_text(size = 10,angle = 45,hjust = 1),
-          axis.line = element_line(colour = "black"),
-          axis.text.y = element_text(size = 10),
-          legend.position="right"
-    )+
-    scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
-    labs(x='',y='Ralative mRNA Level',title = "qRT-PCR",subtitle = "Control gruop has been set to 1.",
-         caption = "Plot by syngentech",fill="Gene")
-  
-  #仪器与试剂
-  #仪器
-  equip_name <- c('Sorvall Legend Mircro 17台式离心机','Sorvall ST 16R冷冻离心机',
-                  '微量移液器','生物安全柜','EVOS荧光显微成像系统',
-                  '恒温二氧化碳细胞培养箱','实验室耗材I(移液枪头、1.5/2.0mL离心管)',
-                  '实验室耗材II(细胞培养皿、移液管等)','超低温冷冻冰箱',
-                  'iMark Microplate Absorbance Reader')
-  equip_source <- c('美国ThermoFisher公司','美国ThermoFisher公司','德国Eppendorf公司',
-                    '美国ThermoFisher公司','美国ThermoFisher公司','美国ThermoFisher公司',
-                    '美国Axygen公司','美国Corning公司','美国ThermoFisher公司','美国Bio-Rad公司')
-  equip_table <- data.frame(equip_name,equip_source)
-  equip_ft <- equip_table%>%
-    flextable()%>%
-    set_header_labels(equip_name='仪器名称',equip_source='生产厂家')%>%
-    add_header_lines(values = '表1.1.1  主要仪器及生产商')%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_w = 0.7,add_h = 0.15)%>%
-    font(fontname = fontname, part = "all")
-  
-  #试剂列表
-  regent_name <- c('RNAiso Plus','限制性内切酶类',
-                   'Top Green qPCR SuperMix','DMEM高糖培养基','RPMI 1640培养基',
-                   '胎牛血清')
-  regent_source <- c('宝生物工程(大连)有限公司','美国NEB公司/美国ThermoFisher公司',
-                     '北京全式金生物技术有限公司','美国Gibco公司','美国Gibco公司','美国Gibco公司')
-  regent_table <- data.frame(regent_name,regent_source)
-  regent_ft <- regent_table%>%
-    flextable()%>%
-    set_header_labels(regent_name='试剂名称',regent_source='生产厂家')%>%
-    footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
-    add_header_lines(values = '表1.2.1  主要试剂及生产商')%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_w = 0.8,add_h = 0.17)%>%
-    height(height = 0.3,part = 'foot')%>%
-    font(fontname = fontname, part = "all")
-  
-  #建立word文档
-  my_doc <- read_docx('./data/template.docx')
-  my_doc %>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par(value = data_head[contract_num+1],style  = 'Subtitle')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par("项目结题报告",style  = 'Title')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par(value = '项目名称：qRT-PCR基因转录水平检测',style  = 'Subtitle')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "仪器与试剂", style = "heading 1") %>%
-    body_add_par("实验仪器",style='heading 2')  %>%
-    body_add_flextable(value = equip_ft) %>%
-    body_add_par("实验试剂",style='heading 2')  %>%
-    body_add_flextable(value = regent_ft) %>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "实验方法和分组", style = "heading 1") %>%
-    body_add_par("实验方法",style='heading 2')  %>%
-    body_add_par('实验原理：本实验采取荧光染料法进行PCR定量。该方法采用与双链DNA特异结合的荧光染料，常用的染料是SYBR green。 该染料只特异的与双链DNA结合，并且游离状态不发射荧光，只有在结合DNA双链后才发射出荧光信号。随PCR循环数增加，产物量增多，产生的荧光信号逐渐增强，实现了荧光信号与扩增产物数量级的关联。',style='Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('具体步骤：',style = 'Normal')%>%
-    body_add_par('1、异硫氰酸胍/苯酚法-氯仿抽提样本RNA，并测定产物A260/A280值，估计RNA浓度。',style='Normal')%>%
-    body_add_par('2、取出少量产物进行琼脂糖凝胶电泳鉴定RNA质量。质量合格的产物将用于cDNA反转录。',style='Normal')%>%
-    body_add_par('3、提取的RNA产物65℃变性5min，DNase反应去除产物残留基因组DNA后，加入反转录试剂反转录cDNA。',style='Normal')%>%
-    body_add_par('4、Primerbank网站（http://pga.mgh.harvard.edu/primerbank/）或primer 5.0软件设计目的基因上下游PCR引物。
-                   ',style='Normal')%>%
-    body_add_par('5、引物和反转录cDNA产物加入qRT-PCR反应体系，上机检测。',style='Normal')%>%
-    body_add_par('6、数据统计分析，计算目的基因mRNA相对表达量。',style='Normal')%>%
-    body_add_break(pos = "after")%>%
-    
-    
-    body_add_par("实验分组",style='heading 2')  %>%
-    body_add_flextable(value = detail_info_ft) %>%
-    body_add_par("",style='Normal')%>%
-    body_add_flextable(value = assay_group_ft) %>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "结果与讨论", style = "heading 1") %>% 
-    body_add_par("数据平均值和标准差", style = "heading 2")%>% 
-    body_add_flextable(value = mean_sd_ft)%>%
-    body_add_break(pos = "after")%>%
-    body_add_par("显著性差异(t-test)", style = "heading 2")%>% 
-    body_add_flextable(value = p_value_ft)%>% 
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "图表绘制", style = "heading 2") %>% 
-    body_add_gg(value = p ,style = "heading 3",height=6)%>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "实验结论", style = "heading 2")
-
-  my_doc
-}
-  
-  
-  
-  
-  ###########################
-  #####         cck8     ####
-  ###########################
-cck8 <- function(raw_data1,raw_data2){
-  #表头定位
-  raw_data1 <- raw_data1
-  raw_data2 <- raw_data2
-  data_head <- raw_data1[,1]
-  ex_group <- str_which(data_head, '实验分组')
-  contract_num <- str_which(data_head, '合同号')
-  statistic_p <- str_which(data_head, '统计检验参数')
-  paried <- str_which(data_head, '是否配对')
-  statistic_test_group <- str_which(data_head, '显著性检验分组')
-  fontname <- "Arial"
-  
-  #确定数据区域
-  assay_group_data <-  raw_data1[(ex_group+2):(statistic_p-1),]
-  colnames(assay_group_data) <- raw_data1[(ex_group+1),]
-  test_group <- assay_group_data$分组名称
-  test_time <- assay_group_data$`检测时间点（h）`[1]
-  test_0_point <- paste(unique(assay_group_data$检测0点),collapse = '/')
-  assay_group_ft <- assay_group_data[,1:5] %>%
-    flextable()%>%
-    align(align = 'left',part = 'all')%>%
-    add_header_lines("表2.2.1  CCK-8细胞增殖及毒性检测实验分组")%>%
-    footnote(i=2,j=5,part = 'header',value = as_paragraph(paste('检测时间为加药后',test_0_point,'，单位：h')))%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_h = 0.2)%>%
-    font(fontname = fontname, part = "all")
-  
-  #确定统计参数
-  statistic_test_data <- raw_data1[str_which(raw_data1[,2],'vs'),1:3]
-  compare_group <- paste(statistic_test_data[,1],statistic_test_data[,3],sep = '/',collapse = ',')
-  compare_group_list <- strsplit(strsplit(compare_group,',')[[1]],'/')
-  
-  #确定原始数据
-  omit_extream <- function(x){
-    y <- x[order(abs(x-quantile(x,0.5,na.rm = TRUE)))]
-    y <- y[1:3]
-  } 
-  
-  colnames(raw_data2) <- str_replace_all(colnames(raw_data2),'[.]',' ')
-  target_data <- raw_data2%>%
-    gather(colnames(raw_data2)[-(1:2)],key = 'group',value = 'value')%>%
-    drop_na()%>%
-    spread(sample,value)%>%
-    select(-time,-group)%>%
-    apply(1,omit_extream)
-  
-  
-  data_body <- as.data.frame(t(target_data))%>%
-    mutate(V1=round(V1,digits = 3),
-           V2=round(V2,digits = 3),
-           V3=round(V3,digits = 3))
-  colnames(data_body) <- c('sample1','sample2','sample3')
-  data_label <- raw_data2%>%
-    gather(colnames(raw_data2)[-(1:2)],key = 'group',value = 'value')%>%
-    drop_na()%>%
-    filter(sample<4)%>%
-    spread(sample,value)%>%
-    select(time,group)
-  
-  clean_data <- cbind(data_label,data_body )
-  
-  z <- clean_data%>%
-    gather('sample1','sample2','sample3',key = 'sample',value = 'value')
-  
-  mean_sd_data <- 
-    z%>%
-    group_by(time,group)%>%
-    summarise(
-      Mean=round(mean(value,na.rm = TRUE),digits = 3),
-      SD=round(sd(value,na.rm = TRUE),digits = 3),
-      QC=round(sd(value,na.rm = TRUE)/mean(value,na.rm = TRUE),digits = 3)
-    )%>%
-    left_join(clean_data,by = c("group",'time'))%>%
-    arrange(group)
-  
-  #原始数据和常规统计量
-  mean_sd_ft <- mean_sd_data%>%
-    flextable(col_keys = c('group','time','sample1','sample2','sample3','Mean','SD','QC')) %>%
-    merge_v(j=1)%>%
-    fix_border_issues()%>%
-    color(i=~QC>=0.5,j=~QC, color = "red")%>%
-    set_header_labels(group='实验分组',time='检测时间点',Mean='平均值',SD='标准差',sample1='复孔1',sample2='复孔2',sample3='复孔3')%>%
-    footnote(j=~QC,part = 'header',value = as_paragraph('QC值为标准差/平均值，数值越大表明该组实验数据波动性越高，其中≥0.5的值会被标记为红色'))%>%
-    border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
-    add_header_lines("表3.1.1  CCK-8细胞增殖及毒性检测原始数据（OD450）")%>%
-    align(align = 'center',part = 'all') %>%
-    fontsize(size = 9,part = 'all')%>%
-    merge_v(j=~group,part = "body")%>%
-    autofit(add_h = 0.2,add_w = 0.3) %>%
-    width(j = 1, width = 1.5)%>%
-    font(fontname = fontname, part = "all")
-  
-  #数据归一化
-  nor_data <-  do.call(rbind,lapply(split(z,z$group),function(x){
-    y <- x$'value'/mean(x$'value'[as.character(x$'time')==test_0_point[1]])
-    cbind(x,y)
-  }))
-  
-  #显著性
-  p_value <- as.data.frame(do.call(cbind,lapply(compare_group_list,function(x){
-    y <- z %>%
-      filter(group==x[1]|group==x[2])%>%
-      group_by(time)
-    p_value <- unlist(lapply(split(y,y$time),function(x){
-      if(var.test(value~group,x)$p.value>=0.05){
-        var_value=1
-      }else{
-        var_value=0}
-      round(t.test(value~group,x,var.equal =var_value)$p.value,digits = 3)
-    }))
-  })))
-  colnames(p_value) <- unlist(lapply(compare_group_list,function(x){
-    paste(x[1],'vs',x[2])
-  }))
-  p_value_table <-as.data.frame(t(p_value))  
-  p_value_table$'ttest_group' <- rownames(p_value_table)
-  
-  p_value_ft <-  p_value_table%>%
-    select(length(p_value_table),1:(length(p_value_table)-1))%>%
-    flextable() %>%
-    add_header_lines("表3.2.1  CCK-8细胞增殖及毒性检测数据显著性差异( P_value )")%>%
-    footnote(i=1,part = 'header',
-             value = as_paragraph('ns：P_value>0.05\n *：P_value≤0.05\n **：P_value≤0.01\n ***：P_value≤0.001\n ****：P_value≤0.0001\n')) %>%
-    align(align = 'center',part = 'all') %>%
-    fontsize(size = 9,part = 'all')%>%
-    autofit(add_h = 0.2) %>%
-    width(j = 1, width = 3)%>%
-    height(i=1,height = 1.7,part = 'foot')%>%
-    font(fontname = fontname, part = "all")
-  
-  #统计作图
-  p <- ggline(z, x="time", y="value", add = "mean_sd", color = "group",palette = 'simpsons')+
-    theme(plot.title = element_text(lineheight=.8, size=30, face="bold",hjust = 0.5),
-          axis.title= element_text(size = 12),
-          axis.text.x = element_text(size = 12,angle = 45,hjust = 1),
-          axis.text.y = element_text(size = 12),
-          legend.position="right",
-          legend.title=element_blank(),
-          legend.key=element_rect(size=0.005),
-          legend.text = element_text(size = 7))+
-    labs(title = '' ,x= 'Time(h)',y='Cell Viabilit')+
-    scale_x_discrete(expand = c(0,0.2))
-  
-  p2 <- ggline(nor_data, x="time", y="y", add = "mean_sd", color = "group",palette = 'simpsons')+
-    theme(plot.title = element_text(lineheight=.8, size=30, face="bold",hjust = 0.5),
-          axis.title= element_text(size = 12),
-          axis.text.x = element_text(size = 12,angle = 45,hjust = 1),
-          axis.text.y = element_text(size = 12),
-          legend.position="right",
-          legend.title=element_blank(),
-          legend.key=element_rect(size=0.005),
-          legend.text = element_text(size = 7))+
-    labs(title = '' ,x= 'Time(h)',y='Relative Cell Viability')+
-    scale_x_discrete(expand = c(0,0.2))
-  
-  
-  
-  #仪器与试剂
-  #仪器
-  equip_name <- c('Sorvall Legend Mircro 17台式离心机','Sorvall ST 16R冷冻离心机',
-                  '微量移液器','生物安全柜','EVOS荧光显微成像系统',
-                  '恒温二氧化碳细胞培养箱','实验室耗材I(移液枪头、1.5/2.0 mL离心管)',
-                  '实验室耗材II(细胞培养皿、移液管等)','超低温冷冻冰箱',
-                  'iMark Microplate Absorbance Reader')
-  equip_source <- c('美国ThermoFisher公司','美国ThermoFisher公司','德国Eppendorf公司',
-                    '美国ThermoFisher公司','美国ThermoFisher公司','美国ThermoFisher公司',
-                    '美国Axygen公司','美国Corning公司','美国ThermoFisher公司','美国Bio-Rad公司')
-  equip_table <- data.frame(equip_name,equip_source)
-  equip_ft <- equip_table%>%
-    flextable()%>%
-    set_header_labels(equip_name='仪器名称',equip_source='生产厂家')%>%
-    add_header_lines(values = '表1.1.1  主要仪器及生产商')%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_w = 0.5,add_h = 0.15)%>%
-    font(fontname = fontname, part = "all")
-  
-  
-  #试剂列表
-  regent_name <- c('质粒小量快速提取试剂盒(离心柱型)','限制性内切酶类',
-                   'CCK-8细胞增殖及毒性检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
-                   '胎牛血清')
-  regent_source <- c('天根生化科技(北京)有限公司','美国NEB公司/美国ThermoFisher公司',
-                     '北京索莱宝科技有限公司','美国Gibco公司','美国Gibco公司','美国Gibco公司')
-  regent_table <- data.frame(regent_name,regent_source)
-  regent_ft <- regent_table%>%
-    flextable()%>%
-    set_header_labels(regent_name='试剂名称',regent_source='生产厂家')%>%
-    footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
-    add_header_lines(values = '表1.2.1  主要试剂及生产商')%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_w = 0.8,add_h = 0.17)%>%
-    height(height = 0.3,part = 'foot')%>%
-    font(fontname = fontname, part = "all")
-  
-  
-  #建立word文档
-  my_doc <- read_docx('./data/template.docx')
-  my_doc %>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par(value = data_head[contract_num+1],style  = 'Subtitle')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par("项目结题报告",style  = 'Title')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par(value = '项目名称：CCK-8法细胞增殖活力测定',style  = 'Subtitle')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "仪器与试剂", style = "heading 1") %>%
-    body_add_par("实验仪器",style='heading 2')  %>%
-    body_add_flextable(value = equip_ft) %>%
-    body_add_par("实验试剂",style='heading 2')  %>%
-    body_add_flextable(value = regent_ft) %>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "实验方法和分组", style = "heading 1") %>%
-    body_add_par("实验方法",style='heading 2')  %>%
-    body_add_par('一、细胞活性检测:',style='Normal')%>%
-    body_add_par('1、在96孔板中接种细胞悬液（100 μL/孔）。将培养板放在培养箱中预培养（37℃,5%二氧化碳)',style='Normal')%>%
-    body_add_par('2、向每孔加入10 μL CCK溶液（注意不要在孔中生成气泡，它们会影响OD值读数)。',style='Normal')%>%
-    body_add_par('3、将培养板在培养箱内孵育1-4小时。',style='Normal')%>%
-    body_add_par('4、用酶标仪测定在450 nm处的吸光度。
-               ',style='Normal')%>%
-    body_add_par('5、若暂时不测定OD值，可以向每孔中加入10 μL 0.1 M的HCl溶液或者1% w/v SDS溶液，并遮盖培养板避光保存在室温条件下。24小时内测定，吸光度不会发生变化。',style='Normal')%>%
-    body_add_par("",style='Normal')%>%
-    body_add_par('二、细胞增殖增殖/毒性检测:',style='Normal')%>%
-    body_add_par('1、在96孔板中配置100 μL的细胞悬液。将培养板在培养箱预培养24小时（37℃，5%二氧化碳）。',style='Normal')%>%
-    body_add_par('2、向培养板加入10 μL不同浓度的待测物质。',style='Normal')%>%
-    body_add_par('3、将培养板在培养箱孵育一段适当的时间（例如：6、12、24或48小时）。',style='Normal')%>%
-    body_add_par('4、向每孔加入10 μL CCK溶液（注意不要再孔中生成气泡，它们会影响OD值的读数）。
-               ',style='Normal')%>%
-    body_add_par('5、将培养板在培养箱内孵育1-4小时。',style='Normal')%>%
-    body_add_par('6、用酶标仪测定在450 nm处的吸光度。',style='Normal')%>%
-    body_add_par('7、若暂时不测定OD值，可以向每孔中加入10 μL 0.1 M的HCl溶液或者1% w/v SDS溶液，并遮盖培养板避光保存在室温条件下。24小时内测定，吸光度不会发生变化。',style='Normal')%>%
-    body_add_par('注意：如果待测物质有氧化性或还原性的话，可在加CCK之前更换新鲜培养基（除去培养基，并用培养基洗涤细胞两次，然后加入新的培养基），去掉药物影响。当然药物影响比较小的情况下，可以不更换培养基，直接扣除培养基中加入药物后的空白吸收即可。'
-                 ,style='Normal')%>%
-    body_add_break(pos = "after")%>%
-    
-    
-    body_add_par("实验分组",style='heading 2')  %>%
-    body_add_flextable(value = assay_group_ft) %>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "结果与讨论", style = "heading 1") %>% 
-    body_add_par("数据平均值和标准差", style = "heading 2")%>% 
-    body_add_flextable(value = mean_sd_ft)%>%
-    body_add_break(pos = "after")%>%
-    body_add_par("显著性差异(t-test)", style = "heading 2")%>% 
-    body_add_flextable(value = p_value_ft)%>% 
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "图表绘制", style = "heading 2") %>% 
-    body_add_gg(value = p,width = 6,height = 3.7,style = 'Subtitle')%>%
-    body_add_fpar(fpar(
-      '图3.3.1  CCK-8细胞绝对增殖/毒性检测统计图',
-      fp_p=fp_par(text.align = 'center')))%>%
-    body_add_gg(value = p2,width = 6,height = 3.7,style = 'Subtitle')%>%
-    body_add_fpar(fpar(
-      '图3.3.2  CCK-8细胞相对增殖/毒性检测统计图',
-      fp_p=fp_par(text.align = 'center')))%>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "实验结论", style = "heading 2")
-  my_doc
   }
   
   
-  
-#########################
-#                       #
-#                       #
-#       双萤光素酶      #
-#                       #
-#                       #
-#########################
-dluc <- function(raw_data1,raw_data2){
-  raw_data1 <- raw_data1
-  raw_data2 <- raw_data2
-  data_head <- raw_data1[,1]
-  detail_info <- str_which(data_head, '载体信息')
-  ex_group <- str_which(data_head, '实验分组')
-  contract_num <- str_which(data_head, '合同号')
-  statistic_p <- str_which(data_head, '统计检验参数')
-  paried <- str_which(data_head, '是否配对')
-  #nor_group <- str_which(data_head, '归一化组')
-  statistic_test_group <- str_which(data_head, '显著性检验分组')
-  fontname <- "Arial"
-  
-  #实验分组
-  assay_group_data <-  raw_data1[(ex_group+2):(statistic_p-1),]
-  colnames(assay_group_data) <- raw_data1[(ex_group+1),]
-  assay_group_ft <- assay_group_data %>%
-    flextable()%>%
-    add_header_lines("表2.2.2  分组信息表")%>%
-    merge_v(j='调控元件')%>%
-    fix_border_issues()%>%
-    border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
-    align(align = 'center',part = 'all')%>%
-    footnote(i=2,j=1:2,part = 'head',value = as_paragraph(c('调控元件：miRNA、mimics或转录因子','靶点：mRNA 3‘UTR、miRNA靶序列或启动子')))%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_h = 0.2,add_w = 0.2)%>%
-    width(j = 1, width = 1)%>%
-    font(fontname = fontname, part = "all")
-  
-  #载体信息
-  detail_info_data <-  raw_data1[(detail_info+2):(ex_group-1),1:3]
-  colnames(detail_info_data) <- raw_data1[(detail_info+1),1:3]
-  detail_info_ft <- detail_info_data %>%
-    flextable()%>%
-    add_header_lines("表2.2.1  载体信息表")%>%
-    align(i=1,align = 'center',part = 'head')%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_h = 0.2,add_w = 0.2)%>%
-    font(fontname = fontname, part = "all")
-  
-  
-  #确定统计参数
-  statistic_test_data <- raw_data1[str_which(raw_data1[,2],'vs'),1:3]
-  compare_group <- paste(statistic_test_data[,1],statistic_test_data[,3],sep = '/',collapse = ',')
-  compare_group_list <- strsplit(strsplit(compare_group,',')[[1]],'/')
-  
-  #去除na和极值
-  omit_extream <- function(x){
-    y <- x[order(abs(x-quantile(x,0.5,na.rm = TRUE)))]
-    y <- y[1:6]
-  } 
-  
-  colnames(raw_data2) <- str_replace_all(colnames(raw_data2),'[.]',' ')
-  target_data <- raw_data2%>%
-    gather(-(1:3),key = 'sample',value = 'value')%>%
-    drop_na()%>%
-    spread('sample',value)%>%
-    select(-(1:3))%>%
-    apply(1,omit_extream)
-  
-  data_body <- as.data.frame(t(target_data))
-  colnames(data_body) <- c('sample1','sample2','sample3','sample4','sample5','sample6')
-  data_label <- raw_data2%>%
-    gather(-(1:3),key = 'sample',value = 'value')%>%
-    drop_na()%>%
-    filter(sample<7)%>%
-    spread(sample,value)%>%
-    select((1:3))
-  
-  clean_data <- cbind(data_label,data_body )
-  
-  z <- clean_data%>%
-    gather(-(1:3),key = 'sample',value = 'value')%>%
-    spread(荧光类型,value)%>%
-    mutate(value=round(FLUC/RLUC,digits=3))%>%
-    select(-FLUC,-RLUC)
-  
-  #z2 <- z%>%
-  #  group_by(靶点)%>%
-  #  mutate(value=round(value/as.numeric(nor_data[nor_data$靶点==unique(靶点),2]),digits = 3))%>%
-  #  ungroup()
-  
-  #均值标准差表
-  #未归一化
-  mean_sd_data <- z %>% 
-    group_by(调控元件,靶点)%>%
-    select(value)%>%
-    summarise(
-      Mean=round(mean(value,na.rm = TRUE),digits = 3),
-      SD=round(sd(value,na.rm = TRUE),digits = 3),
-      QC=round(sd(value,na.rm = TRUE)/mean(value,na.rm = TRUE),digits = 3)
-    )
-  
-  sample_data <- z%>%
-    spread(sample,value)
-  
-  mean_sd_ft <- 
-    inner_join(sample_data,mean_sd_data, by = c("调控元件",'靶点'))%>%
-    flextable() %>%
-    color(i=~QC>=0.5,j=~QC, color = "red")%>%
-    set_header_labels(Mean='平均值',SD='标准差',sample1='复孔1',sample2='复孔2',sample3='复孔3',sample4='复孔4',sample5='复孔5',sample6='复孔6')%>%
-    footnote(j=~QC,part = 'header',value = as_paragraph('QC值为标准差/平均值，数值越大表明该组实验数据波动性越高，其中≥0.5的值会被标记为红色'))%>%
-    border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
-    add_header_lines("表3.1.1 相对萤光强度平均值和标准差(fluc/rluc)")%>%
-    align(align = 'center',part = 'all') %>%
-    fontsize(size = 7.5,part = 'all')%>%
-    merge_v(j=1)%>%
-    autofit(add_h = 0.2) %>%
-    width(j = 1, width = 1)%>%
-    font(fontname = fontname, part = "all")
-  
-  #显著性
-  p_value <- as.data.frame(do.call(cbind,lapply(compare_group_list,function(x){
-    y <- z %>%
-      filter(调控元件==x[1]|调控元件==x[2])%>%
-      group_by(靶点)
-    p_value <- unlist(lapply(split(y,y$靶点),function(x){
-      if(var.test(value~调控元件,x)$p.value>=0.05){
+  ## qRTPCR 
+  qRTPCR <- function(raw_data1,raw_data2,image_path,image_name){
+    #表头定位
+    raw_data1 <- raw_data1
+    raw_data2 <- raw_data2
+    data_head <- raw_data1[,1]
+    detail_info <- str_which(data_head, '引物信息')
+    ex_group <- str_which(data_head, '实验分组')
+    contract_num <- str_which(data_head, '合同号')
+    statistic_p <- str_which(data_head, '统计检验参数')
+    paried <- str_which(data_head, '是否配对')
+    statistic_test_group <- str_which(data_head, '显著性检验分组')
+    fontname <- "Arial"
+    nor_group <- str_which(data_head, '归一化组')
+    
+    #实验分组
+    assay_group_data <-  raw_data1[(ex_group+2):(statistic_p-1),]
+    colnames(assay_group_data) <- raw_data1[(ex_group+1),]
+    assay_group_ft <- assay_group_data %>%
+      flextable(col_keys=c('相关基因','实验分组名称','检测细胞','实验描述'))%>%
+      add_header_lines("表2.2.2  分组信息表")%>%
+      merge_v(j=1)%>%
+      border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_h = 0.2,add_w=0.5)%>%
+      font(fontname = fontname, part = "all")
+    
+    #实验信息
+    detail_info_data <-  raw_data1[(detail_info+2):(ex_group-1),]
+    colnames(detail_info_data) <- raw_data1[(detail_info+1),]
+    detail_info_ft <- detail_info_data %>%
+      flextable()%>%
+      add_header_lines("表2.2.1  引物信息表")%>%
+      align(i=1,align = 'center',part = 'head')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_h = 0.2,add_w=0.2)%>%
+      font(fontname = fontname, part = "all")
+    
+    
+    #确定统计参数
+    statistic_test_data <- raw_data1[str_which(raw_data1[,2],'vs'),1:3]
+    compare_group <- paste(statistic_test_data[,1],statistic_test_data[,3],sep = '/',collapse = ',')
+    compare_group_list <- strsplit(strsplit(compare_group,',')[[1]],'/')
+    
+    nor_matrix <- raw_data2[,str_which(colnames(raw_data2),'复孔')]-raw_data2[,str_which(colnames(raw_data2),'内参')]
+    
+    target_data<- raw_data2%>%
+      select(1:3)%>%
+      cbind(nor_matrix)%>%
+      pivot_longer(-(1:3),names_to='sample',values_to='value',values_drop_na = TRUE)%>%
+      group_by(相关基因,分组名称)%>%
+      mutate(value.sort=value-quantile(value,0.5))%>%
+      slice_min(value.sort,n=3,with_ties = FALSE)%>%
+      mutate(sample=paste0('复孔',1:3))%>%
+      group_by(相关基因)%>%
+      mutate(value.fin=2^(mean(value[归一化组%in%'是'])-value))
+    
+    #均值标准差表
+    mean_sd_data <- target_data %>% 
+      group_by(相关基因,分组名称)%>%
+      summarise(
+        Mean=round(mean(value.fin,na.rm = TRUE),digits = 3),
+        SD=round(sd(value.fin,na.rm = TRUE),digits = 3),
+        QC=round(sd(value.fin,na.rm = TRUE)/mean(value.fin,na.rm = TRUE),digits = 3)
+      )
+    
+    mean_sd_ft <- target_data%>%
+      select(-value,-value.sort)%>%
+      mutate(value.fin=round(value.fin,digits = 1))%>%
+      arrange(分组名称,sample,.by_group=T)%>%
+      pivot_wider(names_from = sample,
+                  values_from=value.fin)%>%
+      inner_join(mean_sd_data, by = c('分组名称',"相关基因"))%>%
+      flextable() %>%
+      color(i=~QC>=0.5,j=~QC, color = "red")%>%
+      set_header_labels(相关基因.x='相关基因',分组名称='实验分组',Mean='平均值',SD='标准差')%>%
+      footnote(j=~QC,part = 'header',value = as_paragraph('QC值为标准差/平均值，数值越大表明该组实验数据波动性越高，其中≥0.5的值会被标记为红色'))%>%
+      merge_v(j=1)%>%
+      border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
+      add_header_lines("表3.1.1 相对mRNA表达量平均值和标准差")%>%
+      compose(part = 'header',i=1,value = as_paragraph('表3.1.1 相对mRNA表达量平均值和标准差(2',as_sup('-∆∆Ct'),')'))%>%
+      align(align = 'center',part = 'all') %>%
+      fontsize(size = 7,part = 'all')%>%
+      autofit(add_h = 0.2) %>%
+      width(j = 1, width = 1)%>%
+      height(part = 'foot',height = 1)%>%
+      font(fontname = fontname, part = "all")
+    
+    #显著性
+    p_value <- do.call(rbind,lapply(compare_group_list,function(x){
+      y <- target_data %>%
+        filter(分组名称==x[1]|分组名称==x[2])
+      if(var.test(value~分组名称,data=y)$p.value>=0.05){
         var_value=1
       }else{
         var_value=0}
-      round(t.test(value~调控元件,x,var.equal =var_value)$p.value,digits = 3)
+      round(t.test(value~分组名称,y,var.equal =var_value)$p.value,digits = 3)
     }))
-  })))
-  colnames(p_value) <- unlist(lapply(compare_group_list,function(x){
-    paste(x[1],'vs',x[2])
-  }))
-  p_value_table <-cbind('靶点'=rownames(p_value),p_value)  
-  sig_symbol <- sapply(p_value_table[,2],function(x){
-    ifelse(x>0.05,'ns',
-           ifelse(x>=0.01,'*',
-                  ifelse(x>=0.001,'**',
-                         ifelse(x>=0.0001,'***','****'))))
-  })
-  p_value_table$'sig_symbol' <- sig_symbol
-  
-  p_value_ft <-  p_value_table%>%
-    flextable() %>%
-    add_header_lines("表3.2.1  显著性差异检验")%>%
-    set_header_labels(sig_symbol='显著性')%>%
-    footnote(j=3,part = 'header',
-             value = as_paragraph('ns：P_value>0.05\n *：P_value≤0.05\n **：P_value≤0.01\n ***：P_value≤0.001\n ****：P_value≤0.0001\n')) %>%
-    align(align = 'center',part = 'all') %>%
-    fontsize(size = 9,part = 'all')%>%
-    autofit(add_h = 0.2) %>%
-    width(j = 1, width = 1.8)%>%
-    height(i=1,height = 1.7,part = 'foot')%>%
-    font(fontname = fontname, part = "all")
-  
-  p <- ggplot(mean_sd_data, aes(x=靶点, y=Mean,fill =调控元件))+
-    geom_bar(stat = "identity",position="dodge",width = 0.5)+
-    geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
-                  position=position_dodge(0.5),width=.2,color='grey')+
-    scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
-    theme(plot.title = element_text(face="bold"),
-          plot.title.position = "panel",
-          plot.subtitle = element_text(color = "grey"),
-          panel.background = element_rect(fill = NA),
-          axis.title= element_text(size = 12),
-          axis.text.x = element_text(size = 10,angle = 45,hjust = 1),
-          axis.line = element_line(colour = "black"),
-          axis.text.y = element_text(size = 10),
-          legend.position="right"
-    )+
-    scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
-    labs(x='',y='Ralative Luciferase Activity \n(Ratio of fLuc/rLuc)',
-         title = "Dual Luciferase Reporter Assay",fill="",
-         caption = "Plot by Syngentech")
-  
-  #仪器与试剂
-  #仪器
-  equip_name <- c('Sorvall Legend Mircro 17台式离心机','Sorvall ST 16R冷冻离心机',
-                  '微量移液器','生物安全柜','EVOS荧光显微成像系统',
-                  '恒温二氧化碳细胞培养箱','实验室耗材I（移液枪头、1.5/2.0 mL离心管）',
-                  '实验室耗材II（细胞培养皿、移液管等）','超低温冷冻冰箱',
-                  'iMark Microplate Absorbance Reader')
-  equip_source <- c('美国ThermoFisher公司','美国ThermoFisher公司','德国Eppendorf公司',
-                    '美国ThermoFisher公司','美国ThermoFisher公司','美国ThermoFisher公司',
-                    '美国Axygen公司','美国Corning公司','美国ThermoFisher公司','美国Bio-Rad公司')
-  equip_table <- data.frame(equip_name,equip_source)
-  equip_ft <- equip_table%>%
-    flextable()%>%
-    set_header_labels(equip_name='仪器名称',equip_source='生产厂家')%>%
-    add_header_lines(values = '表1.1.1  主要仪器及生产商')%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_w = 0.5,add_h = 0.15)%>%
-    font(fontname = fontname, part = "all")
-  
-  #试剂列表
-  regent_name <- c('质粒小量快速提取试剂盒(离心柱型) ','限制性内切酶类',
-                   '双萤光素酶检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
-                   '胎牛血清')
-  regent_source <- c('天根生化科技(北京)有限公司','美国NEB公司/美国ThermoFisher公司',
-                     '上海碧云天生物科技有限公司','美国Gibco公司','美国Gibco公司','美国Gibco公司')
-  regent_table <- data.frame(regent_name,regent_source)
-  regent_ft <- regent_table%>%
-    flextable()%>%
-    set_header_labels(regent_name='试剂名称',regent_source='生产厂家')%>%
-    footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
-    add_header_lines(values = '表1.2.1  主要试剂及生产商')%>%
-    align(align = 'center',part = 'all')%>%
-    fontsize(size = 7.5,part = 'all')%>%
-    autofit(add_w = 0.8,add_h = 0.17)%>%
-    height(height = 0.3,part = 'foot')%>%
-    font(fontname = fontname, part = "all")
-  
-  #建立word文档
-  my_doc <- read_docx('./data/template.docx')
-  my_doc %>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par(value = data_head[contract_num+1],style  = 'Subtitle')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par("项目结题报告",style  = 'Title')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par(value = '项目名称：双萤光素酶报告基因检测',style  = 'Subtitle')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par('',style = 'Normal')%>%
-    body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
-    body_add_break(pos = "after")%>%
+    p_value_table <- data.frame('组1'=statistic_test_data[,1],'组2'=statistic_test_data[,3],p_value )
+    sig_symbol <- sapply(p_value_table$p_value,function(x){
+      ifelse(x>0.05,'ns',
+             ifelse(x>=0.01,'*',
+                    ifelse(x>=0.001,'**',
+                           ifelse(x>=0.0001,'***','****'))))
+    })
+    p_value_table$'sig_symbol' <- sig_symbol
     
-    body_add_par(value = "仪器与试剂", style = "heading 1") %>%
-    body_add_par("实验仪器",style='heading 2')  %>%
-    body_add_flextable(value = equip_ft) %>%
-    body_add_par("实验试剂",style='heading 2')  %>%
-    body_add_flextable(value = regent_ft) %>%
-    body_add_break(pos = "after")%>%
+    p_value_ft <-  p_value_table%>%
+      flextable() %>%
+      add_header_lines("表3.2.1  显著性差异检验")%>%
+      set_header_labels(sig_symbol='显著性')%>%
+      footnote(j=3,part = 'header',
+               value = as_paragraph('ns：P_value>0.05\n *：P_value≤0.05\n **：P_value≤0.01\n ***：P_value≤0.001\n ****：P_value≤0.0001\n')) %>%
+      align(align = 'center',part = 'all') %>%
+      fontsize(size = 9,part = 'all')%>%
+      autofit(add_h = 0.2) %>%
+      width(j = 1:2, width = 1.8)%>%
+      width(j = 3:4, width = 0.8)%>%
+      height(i=1,height = 1.7,part = 'foot')%>%
+      font(fontname = fontname, part = "all")
     
-    body_add_par(value = "实验方法和分组", style = "heading 1") %>%
-    body_add_par("实验方法",style='heading 2')  %>%
-    body_add_par('实验原理：萤光素酶和其底物这一生物发光体系，可以非常灵敏、高效地检测基因的表达。通常把感兴趣基因的转录调控元件或5‘启动子区克隆在Luciferase的上游，或把3’-UTR区克隆在Luciferase的下游等，构建成报告基因(Reporter Gene)质粒。然后转染细胞，用适当药物等处理细胞后裂解细胞，测定萤光素酶活性。通过萤光素酶活性的高低来判断药物处理等对目的基因的转录调控作用。Renilla Luciferase相对更多地被用作转染效率的内参，以消除细胞数量和转染效率的差异。
+    #统计作图
+    p <- ggplot(mean_sd_data, aes(x=分组名称, y=Mean,fill =相关基因))+
+      geom_bar(stat = "identity",position="dodge",width = 0.5)+
+      geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
+                    position=position_dodge(0.8),width=.2,color='grey')+
+      scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+      theme(plot.title = element_text(face="bold"),
+            plot.title.position = "panel",
+            plot.subtitle = element_text(color = "grey"),
+            panel.background = element_rect(fill = NA),
+            axis.title= element_text(size = 12),
+            axis.text.x = element_text(size = 10,angle = 45,hjust = 1),
+            axis.line = element_line(colour = "black"),
+            axis.text.y = element_text(size = 10),
+            legend.position="right"
+      )+
+      scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
+      labs(x='',y='Ralative mRNA Level',title = "qRT-PCR",subtitle = "Control gruop has been set to 1.",
+           caption = "Plot by syngentech",fill="Gene")
+    
+    #仪器与试剂
+    #仪器
+    equip_name <- c('Sorvall Legend Mircro 17台式离心机','Sorvall ST 16R冷冻离心机',
+                    '微量移液器','生物安全柜','EVOS荧光显微成像系统',
+                    '恒温二氧化碳细胞培养箱','实验室耗材I(移液枪头、1.5/2.0mL离心管)',
+                    '实验室耗材II(细胞培养皿、移液管等)','超低温冷冻冰箱',
+                    'iMark Microplate Absorbance Reader')
+    equip_source <- c('美国ThermoFisher公司','美国ThermoFisher公司','德国Eppendorf公司',
+                      '美国ThermoFisher公司','美国ThermoFisher公司','美国ThermoFisher公司',
+                      '美国Axygen公司','美国Corning公司','美国ThermoFisher公司','美国Bio-Rad公司')
+    equip_table <- data.frame(equip_name,equip_source)
+    equip_ft <- equip_table%>%
+      flextable()%>%
+      set_header_labels(equip_name='仪器名称',equip_source='生产厂家')%>%
+      add_header_lines(values = '表1.1.1  主要仪器及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.7,add_h = 0.15)%>%
+      font(fontname = fontname, part = "all")
+    
+    #试剂列表
+    regent_name <- c('RNAiso Plus','限制性内切酶类',
+                     'Top Green qPCR SuperMix','DMEM高糖培养基','RPMI 1640培养基',
+                     '胎牛血清')
+    regent_source <- c('宝生物工程(大连)有限公司','美国NEB公司/美国ThermoFisher公司',
+                       '北京全式金生物技术有限公司','美国Gibco公司','美国Gibco公司','美国Gibco公司')
+    regent_table <- data.frame(regent_name,regent_source)
+    regent_ft <- regent_table%>%
+      flextable()%>%
+      set_header_labels(regent_name='试剂名称',regent_source='生产厂家')%>%
+      footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
+      add_header_lines(values = '表1.2.1  主要试剂及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.8,add_h = 0.17)%>%
+      height(height = 0.3,part = 'foot')%>%
+      font(fontname = fontname, part = "all")
+    
+    #建立word文档
+    my_doc <- read_docx('./data/template.docx')
+    my_doc %>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par(value = data_head[contract_num+1],style  = 'Subtitle')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par("项目结题报告",style  = 'Title')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par(value = '项目名称：qRT-PCR基因转录水平检测',style  = 'Subtitle')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "仪器与试剂", style = "heading 1") %>%
+      body_add_par("实验仪器",style='heading 2')  %>%
+      body_add_flextable(value = equip_ft) %>%
+      body_add_par("实验试剂",style='heading 2')  %>%
+      body_add_flextable(value = regent_ft) %>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "实验方法和分组", style = "heading 1") %>%
+      body_add_par("实验方法",style='heading 2')  %>%
+      body_add_par('实验原理：本实验采取荧光染料法进行PCR定量。该方法采用与双链DNA特异结合的荧光染料，常用的染料是SYBR green。 该染料只特异的与双链DNA结合，并且游离状态不发射荧光，只有在结合DNA双链后才发射出荧光信号。随PCR循环数增加，产物量增多，产生的荧光信号逐渐增强，实现了荧光信号与扩增产物数量级的关联。',style='Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('具体步骤：',style = 'Normal')%>%
+      body_add_par('1、异硫氰酸胍/苯酚法-氯仿抽提样本RNA，并测定产物A260/A280值，估计RNA浓度。',style='Normal')%>%
+      body_add_par('2、取出少量产物进行琼脂糖凝胶电泳鉴定RNA质量。质量合格的产物将用于cDNA反转录。',style='Normal')%>%
+      body_add_par('3、提取的RNA产物65℃变性5min，DNase反应去除产物残留基因组DNA后，加入反转录试剂反转录cDNA。',style='Normal')%>%
+      body_add_par('4、Primerbank网站（http://pga.mgh.harvard.edu/primerbank/）或primer 5.0软件设计目的基因上下游PCR引物。
+                   ',style='Normal')%>%
+      body_add_par('5、引物和反转录cDNA产物加入qRT-PCR反应体系，上机检测。',style='Normal')%>%
+      body_add_par('6、数据统计分析，计算目的基因mRNA相对表达量。',style='Normal')%>%
+      body_add_break(pos = "after")%>%
+      
+      
+      body_add_par("实验分组",style='heading 2')  %>%
+      body_add_flextable(value = detail_info_ft) %>%
+      body_add_par("",style='Normal')%>%
+      body_add_flextable(value = assay_group_ft) %>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "结果与讨论", style = "heading 1") %>% 
+      body_add_par("数据平均值和标准差", style = "heading 2")%>% 
+      body_add_flextable(value = mean_sd_ft)%>%
+      body_add_break(pos = "after")%>%
+      body_add_par("显著性差异(t-test)", style = "heading 2")%>% 
+      body_add_flextable(value = p_value_ft)%>% 
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "图表绘制", style = "heading 2") %>% 
+      body_add_gg(value = p ,style = "heading 3",height=6)%>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "实验结论", style = "heading 2")
+    
+    my_doc
+  }
+  
+  
+  ## cck8 
+  cck8 <- function(raw_data1,raw_data2){
+    #表头定位
+    raw_data1 <- raw_data1
+    raw_data2 <- raw_data2
+    data_head <- raw_data1[,1]
+    ex_group <- str_which(data_head, '实验分组')
+    contract_num <- str_which(data_head, '合同号')
+    statistic_p <- str_which(data_head, '统计检验参数')
+    paried <- str_which(data_head, '是否配对')
+    statistic_test_group <- str_which(data_head, '显著性检验分组')
+    fontname <- "Arial"
+    
+    #确定数据区域
+    assay_group_data <-  raw_data1[(ex_group+2):(statistic_p-1),]
+    colnames(assay_group_data) <- raw_data1[(ex_group+1),]
+    test_group <- assay_group_data$分组名称
+    test_time <- assay_group_data$`检测时间点（h）`[1]
+    test_0_point <- paste(unique(assay_group_data$检测0点),collapse = '/')
+    assay_group_ft <- assay_group_data[,1:5] %>%
+      flextable()%>%
+      align(align = 'left',part = 'all')%>%
+      add_header_lines("表2.2.1  CCK-8细胞增殖及毒性检测实验分组")%>%
+      footnote(i=2,j=5,part = 'header',value = as_paragraph(paste('检测时间为加药后',test_0_point,'，单位：h')))%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_h = 0.2)%>%
+      font(fontname = fontname, part = "all")
+    
+    #确定统计参数
+    statistic_test_data <- raw_data1[str_which(raw_data1[,2],'vs'),1:3]
+    compare_group <- paste(statistic_test_data[,1],statistic_test_data[,3],sep = '/',collapse = ',')
+    compare_group_list <- strsplit(strsplit(compare_group,',')[[1]],'/')
+    
+    #确定原始数据
+    omit_extream <- function(x){
+      y <- x[order(abs(x-quantile(x,0.5,na.rm = TRUE)))]
+      y <- y[1:3]
+    } 
+    
+    colnames(raw_data2) <- str_replace_all(colnames(raw_data2),'[.]',' ')
+    target_data <- raw_data2%>%
+      gather(colnames(raw_data2)[-(1:2)],key = 'group',value = 'value')%>%
+      drop_na()%>%
+      spread(sample,value)%>%
+      select(-time,-group)%>%
+      apply(1,omit_extream)
+    
+    
+    data_body <- as.data.frame(t(target_data))%>%
+      mutate(V1=round(V1,digits = 3),
+             V2=round(V2,digits = 3),
+             V3=round(V3,digits = 3))
+    colnames(data_body) <- c('sample1','sample2','sample3')
+    data_label <- raw_data2%>%
+      gather(colnames(raw_data2)[-(1:2)],key = 'group',value = 'value')%>%
+      drop_na()%>%
+      filter(sample<4)%>%
+      spread(sample,value)%>%
+      select(time,group)
+    
+    clean_data <- cbind(data_label,data_body )
+    
+    z <- clean_data%>%
+      gather('sample1','sample2','sample3',key = 'sample',value = 'value')
+    
+    mean_sd_data <- 
+      z%>%
+      group_by(time,group)%>%
+      summarise(
+        Mean=round(mean(value,na.rm = TRUE),digits = 3),
+        SD=round(sd(value,na.rm = TRUE),digits = 3),
+        QC=round(sd(value,na.rm = TRUE)/mean(value,na.rm = TRUE),digits = 3)
+      )%>%
+      left_join(clean_data,by = c("group",'time'))%>%
+      arrange(group)
+    
+    #原始数据和常规统计量
+    mean_sd_ft <- mean_sd_data%>%
+      flextable(col_keys = c('group','time','sample1','sample2','sample3','Mean','SD','QC')) %>%
+      merge_v(j=1)%>%
+      fix_border_issues()%>%
+      color(i=~QC>=0.5,j=~QC, color = "red")%>%
+      set_header_labels(group='实验分组',time='检测时间点',Mean='平均值',SD='标准差',sample1='复孔1',sample2='复孔2',sample3='复孔3')%>%
+      footnote(j=~QC,part = 'header',value = as_paragraph('QC值为标准差/平均值，数值越大表明该组实验数据波动性越高，其中≥0.5的值会被标记为红色'))%>%
+      border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
+      add_header_lines("表3.1.1  CCK-8细胞增殖及毒性检测原始数据（OD450）")%>%
+      align(align = 'center',part = 'all') %>%
+      fontsize(size = 9,part = 'all')%>%
+      merge_v(j=~group,part = "body")%>%
+      autofit(add_h = 0.2,add_w = 0.3) %>%
+      width(j = 1, width = 1.5)%>%
+      font(fontname = fontname, part = "all")
+    
+    #数据归一化
+    nor_data <-  do.call(rbind,lapply(split(z,z$group),function(x){
+      y <- x$'value'/mean(x$'value'[as.character(x$'time')==test_0_point[1]])
+      cbind(x,y)
+    }))
+    
+    #显著性
+    p_value <- as.data.frame(do.call(cbind,lapply(compare_group_list,function(x){
+      y <- z %>%
+        filter(group==x[1]|group==x[2])%>%
+        group_by(time)
+      p_value <- unlist(lapply(split(y,y$time),function(x){
+        if(var.test(value~group,x)$p.value>=0.05){
+          var_value=1
+        }else{
+          var_value=0}
+        round(t.test(value~group,x,var.equal =var_value)$p.value,digits = 3)
+      }))
+    })))
+    colnames(p_value) <- unlist(lapply(compare_group_list,function(x){
+      paste(x[1],'vs',x[2])
+    }))
+    p_value_table <-as.data.frame(t(p_value))  
+    p_value_table$'ttest_group' <- rownames(p_value_table)
+    
+    p_value_ft <-  p_value_table%>%
+      select(length(p_value_table),1:(length(p_value_table)-1))%>%
+      flextable() %>%
+      add_header_lines("表3.2.1  CCK-8细胞增殖及毒性检测数据显著性差异( P_value )")%>%
+      footnote(i=1,part = 'header',
+               value = as_paragraph('ns：P_value>0.05\n *：P_value≤0.05\n **：P_value≤0.01\n ***：P_value≤0.001\n ****：P_value≤0.0001\n')) %>%
+      align(align = 'center',part = 'all') %>%
+      fontsize(size = 9,part = 'all')%>%
+      autofit(add_h = 0.2) %>%
+      width(j = 1, width = 3)%>%
+      height(i=1,height = 1.7,part = 'foot')%>%
+      font(fontname = fontname, part = "all")
+    
+    #统计作图
+    p <- ggline(z, x="time", y="value", add = "mean_sd", color = "group",palette = 'simpsons')+
+      theme(plot.title = element_text(lineheight=.8, size=30, face="bold",hjust = 0.5),
+            axis.title= element_text(size = 12),
+            axis.text.x = element_text(size = 12,angle = 45,hjust = 1),
+            axis.text.y = element_text(size = 12),
+            legend.position="right",
+            legend.title=element_blank(),
+            legend.key=element_rect(size=0.005),
+            legend.text = element_text(size = 7))+
+      labs(title = '' ,x= 'Time(h)',y='Cell Viabilit')+
+      scale_x_discrete(expand = c(0,0.2))
+    
+    p2 <- ggline(nor_data, x="time", y="y", add = "mean_sd", color = "group",palette = 'simpsons')+
+      theme(plot.title = element_text(lineheight=.8, size=30, face="bold",hjust = 0.5),
+            axis.title= element_text(size = 12),
+            axis.text.x = element_text(size = 12,angle = 45,hjust = 1),
+            axis.text.y = element_text(size = 12),
+            legend.position="right",
+            legend.title=element_blank(),
+            legend.key=element_rect(size=0.005),
+            legend.text = element_text(size = 7))+
+      labs(title = '' ,x= 'Time(h)',y='Relative Cell Viability')+
+      scale_x_discrete(expand = c(0,0.2))
+    
+    
+    
+    #仪器与试剂
+    #仪器
+    equip_name <- c('Sorvall Legend Mircro 17台式离心机','Sorvall ST 16R冷冻离心机',
+                    '微量移液器','生物安全柜','EVOS荧光显微成像系统',
+                    '恒温二氧化碳细胞培养箱','实验室耗材I(移液枪头、1.5/2.0 mL离心管)',
+                    '实验室耗材II(细胞培养皿、移液管等)','超低温冷冻冰箱',
+                    'iMark Microplate Absorbance Reader')
+    equip_source <- c('美国ThermoFisher公司','美国ThermoFisher公司','德国Eppendorf公司',
+                      '美国ThermoFisher公司','美国ThermoFisher公司','美国ThermoFisher公司',
+                      '美国Axygen公司','美国Corning公司','美国ThermoFisher公司','美国Bio-Rad公司')
+    equip_table <- data.frame(equip_name,equip_source)
+    equip_ft <- equip_table%>%
+      flextable()%>%
+      set_header_labels(equip_name='仪器名称',equip_source='生产厂家')%>%
+      add_header_lines(values = '表1.1.1  主要仪器及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.5,add_h = 0.15)%>%
+      font(fontname = fontname, part = "all")
+    
+    
+    #试剂列表
+    regent_name <- c('质粒小量快速提取试剂盒(离心柱型)','限制性内切酶类',
+                     'CCK-8细胞增殖及毒性检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
+                     '胎牛血清')
+    regent_source <- c('天根生化科技(北京)有限公司','美国NEB公司/美国ThermoFisher公司',
+                       '北京索莱宝科技有限公司','美国Gibco公司','美国Gibco公司','美国Gibco公司')
+    regent_table <- data.frame(regent_name,regent_source)
+    regent_ft <- regent_table%>%
+      flextable()%>%
+      set_header_labels(regent_name='试剂名称',regent_source='生产厂家')%>%
+      footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
+      add_header_lines(values = '表1.2.1  主要试剂及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.8,add_h = 0.17)%>%
+      height(height = 0.3,part = 'foot')%>%
+      font(fontname = fontname, part = "all")
+    
+    
+    #建立word文档
+    my_doc <- read_docx('./data/template.docx')
+    my_doc %>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par(value = data_head[contract_num+1],style  = 'Subtitle')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par("项目结题报告",style  = 'Title')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par(value = '项目名称：CCK-8法细胞增殖活力测定',style  = 'Subtitle')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "仪器与试剂", style = "heading 1") %>%
+      body_add_par("实验仪器",style='heading 2')  %>%
+      body_add_flextable(value = equip_ft) %>%
+      body_add_par("实验试剂",style='heading 2')  %>%
+      body_add_flextable(value = regent_ft) %>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "实验方法和分组", style = "heading 1") %>%
+      body_add_par("实验方法",style='heading 2')  %>%
+      body_add_par('一、细胞活性检测:',style='Normal')%>%
+      body_add_par('1、在96孔板中接种细胞悬液（100 μL/孔）。将培养板放在培养箱中预培养（37℃,5%二氧化碳)',style='Normal')%>%
+      body_add_par('2、向每孔加入10 μL CCK溶液（注意不要在孔中生成气泡，它们会影响OD值读数)。',style='Normal')%>%
+      body_add_par('3、将培养板在培养箱内孵育1-4小时。',style='Normal')%>%
+      body_add_par('4、用酶标仪测定在450 nm处的吸光度。
+               ',style='Normal')%>%
+      body_add_par('5、若暂时不测定OD值，可以向每孔中加入10 μL 0.1 M的HCl溶液或者1% w/v SDS溶液，并遮盖培养板避光保存在室温条件下。24小时内测定，吸光度不会发生变化。',style='Normal')%>%
+      body_add_par("",style='Normal')%>%
+      body_add_par('二、细胞增殖增殖/毒性检测:',style='Normal')%>%
+      body_add_par('1、在96孔板中配置100 μL的细胞悬液。将培养板在培养箱预培养24小时（37℃，5%二氧化碳）。',style='Normal')%>%
+      body_add_par('2、向培养板加入10 μL不同浓度的待测物质。',style='Normal')%>%
+      body_add_par('3、将培养板在培养箱孵育一段适当的时间（例如：6、12、24或48小时）。',style='Normal')%>%
+      body_add_par('4、向每孔加入10 μL CCK溶液（注意不要再孔中生成气泡，它们会影响OD值的读数）。
+               ',style='Normal')%>%
+      body_add_par('5、将培养板在培养箱内孵育1-4小时。',style='Normal')%>%
+      body_add_par('6、用酶标仪测定在450 nm处的吸光度。',style='Normal')%>%
+      body_add_par('7、若暂时不测定OD值，可以向每孔中加入10 μL 0.1 M的HCl溶液或者1% w/v SDS溶液，并遮盖培养板避光保存在室温条件下。24小时内测定，吸光度不会发生变化。',style='Normal')%>%
+      body_add_par('注意：如果待测物质有氧化性或还原性的话，可在加CCK之前更换新鲜培养基（除去培养基，并用培养基洗涤细胞两次，然后加入新的培养基），去掉药物影响。当然药物影响比较小的情况下，可以不更换培养基，直接扣除培养基中加入药物后的空白吸收即可。'
+                   ,style='Normal')%>%
+      body_add_break(pos = "after")%>%
+      
+      
+      body_add_par("实验分组",style='heading 2')  %>%
+      body_add_flextable(value = assay_group_ft) %>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "结果与讨论", style = "heading 1") %>% 
+      body_add_par("数据平均值和标准差", style = "heading 2")%>% 
+      body_add_flextable(value = mean_sd_ft)%>%
+      body_add_break(pos = "after")%>%
+      body_add_par("显著性差异(t-test)", style = "heading 2")%>% 
+      body_add_flextable(value = p_value_ft)%>% 
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "图表绘制", style = "heading 2") %>% 
+      body_add_gg(value = p,width = 6,height = 3.7,style = 'Subtitle')%>%
+      body_add_fpar(fpar(
+        '图3.3.1  CCK-8细胞绝对增殖/毒性检测统计图',
+        fp_p=fp_par(text.align = 'center')))%>%
+      body_add_gg(value = p2,width = 6,height = 3.7,style = 'Subtitle')%>%
+      body_add_fpar(fpar(
+        '图3.3.2  CCK-8细胞相对增殖/毒性检测统计图',
+        fp_p=fp_par(text.align = 'center')))%>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "实验结论", style = "heading 2")
+    my_doc
+  }
+  
+  
+  ## 双萤光素酶
+  dluc <- function(raw_data1,raw_data2){
+    raw_data1 <- raw_data1
+    raw_data2 <- raw_data2
+    data_head <- raw_data1[,1]
+    detail_info <- str_which(data_head, '载体信息')
+    ex_group <- str_which(data_head, '实验分组')
+    contract_num <- str_which(data_head, '合同号')
+    statistic_p <- str_which(data_head, '统计检验参数')
+    paried <- str_which(data_head, '是否配对')
+    #nor_group <- str_which(data_head, '归一化组')
+    statistic_test_group <- str_which(data_head, '显著性检验分组')
+    fontname <- "Arial"
+    
+    #实验分组
+    assay_group_data <-  raw_data1[(ex_group+2):(statistic_p-1),]
+    colnames(assay_group_data) <- raw_data1[(ex_group+1),]
+    assay_group_ft <- assay_group_data %>%
+      flextable()%>%
+      add_header_lines("表2.2.2  分组信息表")%>%
+      merge_v(j='调控元件')%>%
+      fix_border_issues()%>%
+      border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
+      align(align = 'center',part = 'all')%>%
+      footnote(i=2,j=1:2,part = 'head',value = as_paragraph(c('调控元件：miRNA、mimics或转录因子','靶点：mRNA 3‘UTR、miRNA靶序列或启动子')))%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_h = 0.2,add_w = 0.2)%>%
+      width(j = 1, width = 1)%>%
+      font(fontname = fontname, part = "all")
+    
+    #载体信息
+    detail_info_data <-  raw_data1[(detail_info+2):(ex_group-1),1:3]
+    colnames(detail_info_data) <- raw_data1[(detail_info+1),1:3]
+    detail_info_ft <- detail_info_data %>%
+      flextable()%>%
+      add_header_lines("表2.2.1  载体信息表")%>%
+      align(i=1,align = 'center',part = 'head')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_h = 0.2,add_w = 0.2)%>%
+      font(fontname = fontname, part = "all")
+    
+    
+    #确定统计参数
+    statistic_test_data <- raw_data1[str_which(raw_data1[,2],'vs'),1:3]
+    compare_group <- paste(statistic_test_data[,1],statistic_test_data[,3],sep = '/',collapse = ',')
+    compare_group_list <- strsplit(strsplit(compare_group,',')[[1]],'/')
+    
+    target_data <- raw_data2%>%
+      pivot_longer(4:length(raw_data2),
+                   names_to='sample',
+                   values_to='values',
+                   values_drop_na=TRUE)%>%
+      pivot_wider(names_from = 荧光类型,values_from=values)%>%
+      mutate(values=FLUC/RLUC)%>%
+      group_by(调控元件,靶点)%>%
+      mutate(values.sort=values-quantile(values,0.5))%>%
+      slice_min(values.sort,n=6,with_ties = FALSE)%>%
+      mutate(sample=paste0('复孔',1:6))
+      
+      mean_sd_data <- target_data%>%
+      summarise(
+        Mean=round(mean(values,na.rm = TRUE),digits = 2),
+        SD=round(sd(values,na.rm = TRUE),digits = 2),
+        QC=round(sd(values,na.rm = TRUE)/mean(values,na.rm = TRUE),digits = 2)
+      )
+    
+    target_data_long <- target_data%>%
+      select(调控元件,靶点,sample,values)%>%
+      mutate(values=round(values,digits = 2))%>%
+      arrange(sample,.by_group=T)%>%
+      pivot_wider(names_from = sample,values_from=values)
+    
+    mean_sd_ft <- 
+      inner_join(target_data_long,mean_sd_data, by = c("调控元件",'靶点'))%>%
+      flextable() %>%
+      color(i=~QC>=0.5,j=~QC, color = "red")%>%
+      set_header_labels(Mean='平均值',SD='标准差')%>%
+      footnote(j=~QC,part = 'header',value = as_paragraph('QC值为标准差/平均值，数值越大表明该组实验数据波动性越高，其中≥0.5的值会被标记为红色'))%>%
+      border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
+      add_header_lines("表3.1.1 相对萤光强度平均值和标准差(fluc/rluc)")%>%
+      align(align = 'center',part = 'all') %>%
+      fontsize(size = 6,part = 'all')%>%
+      merge_v(j=1)%>%
+      autofit(add_h = 0.2,add_w = 0.01) %>%
+      width(j = 1, width = 1)%>%
+      font(fontname = fontname, part = "all")
+    
+    #显著性
+    p_value <- as.data.frame(do.call(cbind,lapply(compare_group_list,function(x){
+      y <- target_data %>%
+        filter(调控元件==x[1]|调控元件==x[2])%>%
+        group_by(靶点)
+      p_value <- unlist(lapply(split(y,y$靶点),function(x){
+        if(var.test(values~调控元件,x)$p.value>=0.05){
+          var_value=1
+        }else{
+          var_value=0}
+        round(t.test(values~调控元件,x,var.equal =var_value)$p.value,digits = 3)
+      }))
+    })))
+    colnames(p_value) <- unlist(lapply(compare_group_list,function(x){
+      paste(x[1],'vs',x[2])
+    }))
+    p_value_table <-cbind('靶点'=rownames(p_value),p_value)  
+    sig_symbol <- sapply(p_value_table[,2],function(x){
+      ifelse(x>0.05,'ns',
+             ifelse(x>=0.01,'*',
+                    ifelse(x>=0.001,'**',
+                           ifelse(x>=0.0001,'***','****'))))
+    })
+    p_value_table$'sig_symbol' <- sig_symbol
+    
+    p_value_ft <-  p_value_table%>%
+      flextable() %>%
+      add_header_lines("表3.2.1  显著性差异检验")%>%
+      set_header_labels(sig_symbol='显著性')%>%
+      footnote(j=3,part = 'header',
+               value = as_paragraph('ns：P_value>0.05\n *：P_value≤0.05\n **：P_value≤0.01\n ***：P_value≤0.001\n ****：P_value≤0.0001\n')) %>%
+      align(align = 'center',part = 'all') %>%
+      fontsize(size = 9,part = 'all')%>%
+      autofit(add_h = 0.2) %>%
+      width(j = 1, width = 1.8)%>%
+      height(i=1,height = 1.7,part = 'foot')%>%
+      font(fontname = fontname, part = "all")
+    
+    p <- ggplot(mean_sd_data, aes(x=靶点, y=Mean,fill =调控元件))+
+      geom_bar(stat = "identity",position="dodge",width = 0.5)+
+      geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
+                    position=position_dodge(0.5),width=.2,color='grey')+
+      scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+      theme(plot.title = element_text(face="bold"),
+            plot.title.position = "panel",
+            plot.subtitle = element_text(color = "grey"),
+            panel.background = element_rect(fill = NA),
+            axis.title= element_text(size = 12),
+            axis.text.x = element_text(size = 10,angle = 45,hjust = 1),
+            axis.line = element_line(colour = "black"),
+            axis.text.y = element_text(size = 10),
+            legend.position="right"
+      )+
+      scale_fill_viridis(option = 'E',discrete = T,alpha = 0.7)+
+      labs(x='',y='Ralative Luciferase Activity \n(Ratio of fLuc/rLuc)',
+           title = "Dual Luciferase Reporter Assay",fill="",
+           caption = "Plot by Syngentech")
+    
+    #仪器与试剂
+    #仪器
+    equip_name <- c('Sorvall Legend Mircro 17台式离心机','Sorvall ST 16R冷冻离心机',
+                    '微量移液器','生物安全柜','EVOS荧光显微成像系统',
+                    '恒温二氧化碳细胞培养箱','实验室耗材I（移液枪头、1.5/2.0 mL离心管）',
+                    '实验室耗材II（细胞培养皿、移液管等）','超低温冷冻冰箱',
+                    'iMark Microplate Absorbance Reader')
+    equip_source <- c('美国ThermoFisher公司','美国ThermoFisher公司','德国Eppendorf公司',
+                      '美国ThermoFisher公司','美国ThermoFisher公司','美国ThermoFisher公司',
+                      '美国Axygen公司','美国Corning公司','美国ThermoFisher公司','美国Bio-Rad公司')
+    equip_table <- data.frame(equip_name,equip_source)
+    equip_ft <- equip_table%>%
+      flextable()%>%
+      set_header_labels(equip_name='仪器名称',equip_source='生产厂家')%>%
+      add_header_lines(values = '表1.1.1  主要仪器及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.5,add_h = 0.15)%>%
+      font(fontname = fontname, part = "all")
+    
+    #试剂列表
+    regent_name <- c('质粒小量快速提取试剂盒(离心柱型) ','限制性内切酶类',
+                     '双萤光素酶检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
+                     '胎牛血清')
+    regent_source <- c('天根生化科技(北京)有限公司','美国NEB公司/美国ThermoFisher公司',
+                       '上海碧云天生物科技有限公司','美国Gibco公司','美国Gibco公司','美国Gibco公司')
+    regent_table <- data.frame(regent_name,regent_source)
+    regent_ft <- regent_table%>%
+      flextable()%>%
+      set_header_labels(regent_name='试剂名称',regent_source='生产厂家')%>%
+      footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
+      add_header_lines(values = '表1.2.1  主要试剂及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.8,add_h = 0.17)%>%
+      height(height = 0.3,part = 'foot')%>%
+      font(fontname = fontname, part = "all")
+    
+    #建立word文档
+    my_doc <- read_docx('./data/template.docx')
+    my_doc %>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par(value = data_head[contract_num+1],style  = 'Subtitle')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par("项目结题报告",style  = 'Title')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par(value = '项目名称：双萤光素酶报告基因检测',style  = 'Subtitle')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par('',style = 'Normal')%>%
+      body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "仪器与试剂", style = "heading 1") %>%
+      body_add_par("实验仪器",style='heading 2')  %>%
+      body_add_flextable(value = equip_ft) %>%
+      body_add_par("实验试剂",style='heading 2')  %>%
+      body_add_flextable(value = regent_ft) %>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "实验方法和分组", style = "heading 1") %>%
+      body_add_par("实验方法",style='heading 2')  %>%
+      body_add_par('实验原理：萤光素酶和其底物这一生物发光体系，可以非常灵敏、高效地检测基因的表达。通常把感兴趣基因的转录调控元件或5‘启动子区克隆在Luciferase的上游，或把3’-UTR区克隆在Luciferase的下游等，构建成报告基因(Reporter Gene)质粒。然后转染细胞，用适当药物等处理细胞后裂解细胞，测定萤光素酶活性。通过萤光素酶活性的高低来判断药物处理等对目的基因的转录调控作用。Renilla Luciferase相对更多地被用作转染效率的内参，以消除细胞数量和转染效率的差异。
                    ',style='chinese_style')%>%
-    body_add_par('',style = 'chinese_style')%>%
-    body_add_par('具体步骤：',style = 'chinese_style')%>%
-    body_add_par('1、裂解细胞：将报告基因细胞裂解液充分混匀后，加入报告基因细胞裂解液，充分裂解细胞。',style='chinese_style')%>%
-    body_add_par('2、融解萤火虫萤光素酶检测试剂和海肾萤光素酶检测缓冲液，并达到室温。海肾萤光素酶检测底物(100X)置于冰浴或冰盒上备用。',style='chinese_style')%>%
-    body_add_par('3、按照每个样品需100微升的量，取适量海肾萤光素酶检测缓冲液，按照1:100加入海肾萤光素酶检测底物(100X)配制成海肾萤光素酶检测工作液。',style='chinese_style')%>%
-    body_add_par('4、上机检测萤光强度，测定间隔设为2秒，测定时间设为10秒。
+      body_add_par('',style = 'chinese_style')%>%
+      body_add_par('具体步骤：',style = 'chinese_style')%>%
+      body_add_par('1、裂解细胞：将报告基因细胞裂解液充分混匀后，加入报告基因细胞裂解液，充分裂解细胞。',style='chinese_style')%>%
+      body_add_par('2、融解萤火虫萤光素酶检测试剂和海肾萤光素酶检测缓冲液，并达到室温。海肾萤光素酶检测底物(100X)置于冰浴或冰盒上备用。',style='chinese_style')%>%
+      body_add_par('3、按照每个样品需100微升的量，取适量海肾萤光素酶检测缓冲液，按照1:100加入海肾萤光素酶检测底物(100X)配制成海肾萤光素酶检测工作液。',style='chinese_style')%>%
+      body_add_par('4、上机检测萤光强度，测定间隔设为2秒，测定时间设为10秒。
                    ',style='chinese_style')%>%
-    body_add_par('5、每个样品测定时，取样品20-100微升(如果样品量足够，请加入100微升；如果样品量不足可以适当减少用量，但同批样品的使用量宜保持一致)。
+      body_add_par('5、每个样品测定时，取样品20-100微升(如果样品量足够，请加入100微升；如果样品量不足可以适当减少用量，但同批样品的使用量宜保持一致)。
                    ',style='chinese_style')%>%
-    body_add_par('6、加入100微升萤火虫萤光素酶检测试剂，用枪打匀或用其它适当方式混匀后测定RLU(Relative Light Unit)。以报告基因细胞裂解液为空白对照。
+      body_add_par('6、加入100微升萤火虫萤光素酶检测试剂，用枪打匀或用其它适当方式混匀后测定RLU(Relative Light Unit)。以报告基因细胞裂解液为空白对照。
                    ',style='chinese_style')%>%
-    body_add_par('7、在完成上述测定萤火虫萤光素酶步骤后，加入100微升海肾萤光素酶检测工作液，用枪打匀或用其它适当方式混匀后测定RLU。
+      body_add_par('7、在完成上述测定萤火虫萤光素酶步骤后，加入100微升海肾萤光素酶检测工作液，用枪打匀或用其它适当方式混匀后测定RLU。
                    ',style='chinese_style')%>%
-    body_add_par('8、在以海肾萤光素酶为内参的情况下，用萤火虫萤光素酶测定得到的RLU值（fluc）除以海肾萤光素酶测定得到的RLU（rluc）值。根据得到的比值来比较不同样品间目的报告基因的激活程度。如果以萤火虫萤光素酶为内参，也可以进行类似计算。
+      body_add_par('8、在以海肾萤光素酶为内参的情况下，用萤火虫萤光素酶测定得到的RLU值（fluc）除以海肾萤光素酶测定得到的RLU（rluc）值。根据得到的比值来比较不同样品间目的报告基因的激活程度。如果以萤火虫萤光素酶为内参，也可以进行类似计算。
                    ',style='chinese_style')%>%
-    body_add_break(pos = "after")%>%
-    
-    
-    body_add_par("实验分组",style='heading 2')  %>%
-    body_add_flextable(value = detail_info_ft) %>%
-    body_add_par("",style='Normal')%>%
-    body_add_flextable(value = assay_group_ft) %>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "结果与讨论", style = "heading 1") %>% 
-    body_add_par("数据平均值和标准差", style = "heading 2")%>% 
-    body_add_flextable(value = mean_sd_ft)%>%
-    body_add_par("显著性差异(t-test)", style = "heading 2")%>% 
-    body_add_flextable(value = p_value_ft)%>% 
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "图表绘制", style = "heading 2") %>% 
-    body_add_gg(value = p ,style = "heading 3",height = 4)%>%
-    body_add_break(pos = "after")%>%
-    
-    body_add_par(value = "实验结论", style = "heading 2")
-   my_doc
-}
+      body_add_break(pos = "after")%>%
+      
+      
+      body_add_par("实验分组",style='heading 2')  %>%
+      body_add_flextable(value = detail_info_ft) %>%
+      body_add_par("",style='Normal')%>%
+      body_add_flextable(value = assay_group_ft) %>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "结果与讨论", style = "heading 1") %>% 
+      body_add_par("数据平均值和标准差", style = "heading 2")%>% 
+      body_add_flextable(value = mean_sd_ft)%>%
+      body_add_par("显著性差异(t-test)", style = "heading 2")%>% 
+      body_add_flextable(value = p_value_ft)%>% 
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "图表绘制", style = "heading 2") %>% 
+      body_add_gg(value = p ,style = "heading 3",height = 4)%>%
+      body_add_break(pos = "after")%>%
+      
+      body_add_par(value = "实验结论", style = "heading 2")
+    my_doc
+  }
   
+  ## cell_product_man 
+  cell_product_man <- function(raw_data1,raw_data2,image_path,image_name){
+    #表头定位
+    raw_data1 <- raw_data1
+    raw_data2 <- raw_data2
+    data_head <- raw_data1[,1]
+    cell_info <- str_which(data_head, '细胞信息')
+    contract_num <- str_which(data_head, '合同号')
+    respon <- str_which(data_head, '负责人')
+    fontname <- "Arial"
+    
+    ##
+    cell_info_data <- raw_data1[(cell_info+2):nrow(raw_data1),]
+    colnames(cell_info_data) <- raw_data1[(cell_info+1),]
+    cell_info_data_ft1 <- cell_info_data[,-(8:14)]%>%
+      flextable()%>%
+      #footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
+      add_header_lines(values = '表1.1  细胞信息表1')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7,part = 'all')%>%
+      autofit(add_h = 0.17)%>%
+      font(fontname = fontname, part = "all")
+    cell_info_data_ft2 <- cell_info_data[,-(2:7)]%>%
+      flextable()%>%
+      #footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
+      add_header_lines(values = '表1.2  细胞信息表2')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7,part = 'all')%>%
+      autofit(add_h = 0.17)%>%
+      font(fontname = fontname, part = "all")
+    
+    #建立word文档
+    #读入模板
+    my_doc <- read_docx('./data/cell_product_templete.docx')
+    my_doc %>%
+      cursor_bookmark("contract_num")%>%
+      body_add_par(data_head[contract_num+1],style  = 'Subtitle')%>%
+      cursor_bookmark("date")%>%
+      body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
+      cursor_bookmark("table1")%>%
+      body_add_flextable(cell_info_data_ft1)%>%
+      cursor_bookmark("table2")%>%
+      body_add_flextable(cell_info_data_ft2)
+    
+    my_doc
+  }
   
-#########################################################################主程序
+  ## cell_myco_test
+  cell_myco_test <- function(raw_data1,raw_data2,image_path,image_name){
+    #表头定位
+    raw_data1 <- raw_data1
+    raw_data2 <- raw_data2
+    data_head <- raw_data1[,1]
+    cell_info <- str_which(data_head, '细胞信息')
+    contract_num <- str_which(data_head, '合同号')
+    respon <- str_which(data_head, '负责人')
+    fontname <- "Arial"
+    
+    ##
+    cell_info_data <- raw_data1[(cell_info+2):nrow(raw_data1),]
+    colnames(cell_info_data) <- raw_data1[(cell_info+1),]
+    cell_info_data_ft1 <- cell_info_data%>%
+      flextable()%>%
+      #footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
+      add_header_lines(values = '表1.1  检测信息表')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_h = 0.17)%>%
+      font(fontname = fontname, part = "all")
+    
+    
+    #建立word文档
+    #读入模板
+    my_doc <- read_docx('./data/cell_myco_templete.docx')
+    my_doc %>%
+      cursor_bookmark("contract_num")%>%
+      body_add_par(data_head[contract_num+1],style  = 'Subtitle')%>%
+      cursor_bookmark("date")%>%
+      body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
+      cursor_bookmark("table1")%>%
+      body_add_flextable(cell_info_data_ft1)%>%
+      cursor_bookmark("pic")%>%
+      body_add_img(image_path[[1]],pos = "after",width = 6,height = 2,style = "pic_style")
+    
+    my_doc
+  }
+  
+  ## wb
+  WB <- function(raw_data1,raw_data2,image_path,image_name){
+    #表头定位
+    raw_data1 <- raw_data1
+    data_head <- raw_data1[,1]
+    contract_num <- str_which(data_head, '合同号')
+    exp_index <- str_which(data_head, '抗体信息')
+    group_index <- str_which(data_head, '实验分组')
+    fontname <- "Arial"
+    
+    #抗体信息
+    antibody_info <- raw_data1[(exp_index+2):(group_index-1),]
+    colnames(antibody_info) <- raw_data1[exp_index+1,]
+    antibody_info <- drop_na(antibody_info)
+    antibody_ft <- antibody_info%>%
+      flextable()%>%
+      add_header_lines("表2.2.2 实验抗体信息")%>%
+      border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_h = 0.2,add_w = 0.2)%>%
+      font(fontname = fontname, part = "all")
+    
+    #分组信息
+    group_info <- raw_data1[(group_index+2):length(data_head),]
+    colnames(group_info) <- raw_data1[group_index+1,]
+    group_ft <- group_info%>%
+      flextable()%>%
+      add_header_lines("表2.2.1 实验分组信息")%>%
+      border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_h = 0.2,add_w = 0.2)%>%
+      font(fontname = fontname, part = "all")
+    
+    #仪器与试剂
+    #仪器
+    equip_name <- c('Sorvall Legend Mircro 17台式离心机','Sorvall ST 16R冷冻离心机',
+                    '微量移液器','生物安全柜','EVOS荧光显微成像系统',
+                    '恒温二氧化碳细胞培养箱','实验室耗材I(移液枪头、1.5/2.0 mL离心管)',
+                    '实验室耗材II(细胞培养皿、移液管等)','超低温冷冻冰箱',
+                    '凝胶成像分析系统','凝胶电泳系统')
+    equip_source <- c('美国ThermoFisher公司','美国ThermoFisher公司','德国Eppendorf公司',
+                      '美国ThermoFisher公司','美国ThermoFisher公司','美国ThermoFisher公司',
+                      '美国Axygen公司','美国Corning公司','美国ThermoFisher公司','北京赛智创业科技有限公司',
+                      '美国BioRad公司')
+    equip_table <- data.frame(equip_name,equip_source)
+    equip_ft <- equip_table%>%
+      flextable()%>%
+      set_header_labels(equip_name='仪器名称',equip_source='生产厂家')%>%
+      add_header_lines(values = '表1.1.1  主要仪器及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.5,add_h = 0.15)%>%
+      font(fontname = fontname, part = "all")
+    
+    
+    #试剂列表
+    regent_name <- c(
+      'CCK-8细胞增殖及毒性检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
+      '胎牛血清','NP-40裂解液',
+      '蛋白酶抑制剂/磷酸酶抑制剂/EDTA','D-PBS','胰酶')
+    regent_source <- c(
+      '北京索莱宝科技有限公司','美国Gibco公司','美国Gibco公司',
+      '美国Gibco公司','北京索莱宝科技有限公司',
+      "上海碧云天生物科技有限公司","上海碧云天生物科技有限公司","上海碧云天生物科技有限公司")
+    regent_table <- data.frame(regent_name,regent_source)
+    regent_ft <- regent_table%>%
+      flextable()%>%
+      set_header_labels(regent_name='试剂名称',regent_source='生产厂家')%>%
+      footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
+      add_header_lines(values = '表1.2.1  主要试剂及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.8,add_h = 0.17)%>%
+      height(height = 0.3,part = 'foot')%>%
+      font(fontname = fontname, part = "all")
+    
+    #读入模板
+    my_doc <- read_docx('./data/wb_templete.docx')
+    my_doc %>%
+      cursor_bookmark("contract_num")%>%
+      body_add_par(data_head[contract_num+1],style  = 'Subtitle')%>%
+      cursor_bookmark("date")%>%
+      body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
+      cursor_bookmark("equipment_info")%>%
+      body_add_flextable(equip_ft)%>%
+      cursor_bookmark("regent_info")%>%
+      body_add_flextable(regent_ft)%>%
+      cursor_bookmark("exp_group")%>%
+      body_add_par('',style = 'pic_style')%>%
+      body_add_flextable(antibody_ft)%>%
+      cursor_bookmark("exp_group")%>%
+      body_add_flextable(group_ft)
+    
+    #结果图片插入
+    #图片高度控制
+    pict_height <- length(antibody_info$`抗体种类`[antibody_info$`抗体种类`=="一抗"])
+    
+    picture_list <- list('wb结果')
+    index <- unlist(lapply(picture_list,function(x){
+      str_which(image_name,x)
+    }))
+    image_path <- image_path[index]
+    for(pic in image_path){
+      cursor_bookmark(my_doc,"result")
+      body_add_par(my_doc,'',style = 'pic_style')
+      slip_in_img(my_doc,pic,width = 6.5,height = pict_height)
+    }
+    my_doc
+  }
+  
+  ## MOI
+  MOI <- function(raw_data1,raw_data2,image_path,image_name){
+    #表头定位
+    raw_data1 <- raw_data1
+    data_head <- raw_data1[,1]
+    contract_num <- str_which(data_head, '合同号')
+    group_index <- str_which(data_head, '实验分组')
+    conclusion <- str_which(data_head, '实验结论')
+    fontname <- "Arial"
+    
+    
+    #分组信息
+    group_info <- raw_data1[(group_index+2):(conclusion-1),]
+    colnames(group_info) <- raw_data1[group_index+1,]
+    group_ft <- group_info%>%
+      flextable()%>%
+      add_header_lines("表2.2.1 实验分组信息")%>%
+      border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 6,part = 'all')%>%
+      autofit()%>%
+      font(fontname = fontname, part = "all")
+    
+    #仪器与试剂
+    #仪器
+    equip_name <- c('Sorvall Legend Mircro 17台式离心机','Sorvall ST 16R冷冻离心机',
+                    '微量移液器','生物安全柜','EVOS荧光显微成像系统',
+                    '恒温二氧化碳细胞培养箱','实验室耗材I(移液枪头、1.5/2.0 mL离心管)',
+                    '实验室耗材II(细胞培养皿、移液管等)','超低温冷冻冰箱',
+                    '凝胶成像分析系统','凝胶电泳系统')
+    equip_source <- c('美国ThermoFisher公司','美国ThermoFisher公司','德国Eppendorf公司',
+                      '美国ThermoFisher公司','美国ThermoFisher公司','美国ThermoFisher公司',
+                      '美国Axygen公司','美国Corning公司','美国ThermoFisher公司','北京赛智创业科技有限公司',
+                      '美国BioRad公司')
+    equip_table <- data.frame(equip_name,equip_source)
+    equip_ft <- equip_table%>%
+      flextable()%>%
+      set_header_labels(equip_name='仪器名称',equip_source='生产厂家')%>%
+      add_header_lines(values = '表1.1.1  主要仪器及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.5,add_h = 0.15)%>%
+      font(fontname = fontname, part = "all")
+    
+    
+    #试剂列表
+    regent_name <- c(
+      'CCK-8细胞增殖及毒性检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
+      '胎牛血清','NP-40裂解液',
+      '蛋白酶抑制剂/磷酸酶抑制剂/EDTA','D-PBS','胰酶')
+    regent_source <- c(
+      '北京索莱宝科技有限公司','美国Gibco公司','美国Gibco公司',
+      '美国Gibco公司','北京索莱宝科技有限公司',
+      "上海碧云天生物科技有限公司","上海碧云天生物科技有限公司","上海碧云天生物科技有限公司")
+    regent_table <- data.frame(regent_name,regent_source)
+    regent_ft <- regent_table%>%
+      flextable()%>%
+      set_header_labels(regent_name='试剂名称',regent_source='生产厂家')%>%
+      footnote(i=1,j=1,part = 'header',value = as_paragraph('注：本部分实验涉及的其他试剂均为分析纯化学试剂。'))%>%
+      add_header_lines(values = '表1.2.1  主要试剂及生产商')%>%
+      align(align = 'center',part = 'all')%>%
+      fontsize(size = 7.5,part = 'all')%>%
+      autofit(add_w = 0.8,add_h = 0.17)%>%
+      height(height = 0.3,part = 'foot')%>%
+      font(fontname = fontname, part = "all")
+    
+    #读入模板
+    my_doc <- read_docx('./data/MOI_templete.docx')
+    my_doc %>%
+      cursor_bookmark("contract_num")%>%
+      body_add_par(data_head[contract_num+1],style  = 'Subtitle')%>%
+      cursor_bookmark("date")%>%
+      body_add_par(value = Sys.Date(),style  = 'Subtitle')%>%
+      cursor_bookmark("equipment_info")%>%
+      body_add_flextable(equip_ft)%>%
+      cursor_bookmark("regent_info")%>%
+      body_add_flextable(regent_ft)%>%
+      cursor_bookmark("exp_group")%>%
+      body_add_flextable(group_ft)
+    
+    conclusion_list <- data_head[(conclusion+1):length(data_head)]
+    for(pic in conclusion_list){
+      cursor_bookmark(my_doc,"conclusion")
+      body_add_par(my_doc,pic,style = 'chinese_style')
+    }
+    
+    
+    #结果图片插入
+    #图片高度控制
+    picture_list <- group_info$细胞
+    index <- unlist(lapply(picture_list,function(x){
+      str_which(image_name,x)
+    }))
+    
+    params <- data.frame("x"=image_path[index],"y"=sub('.png|.jpg','',image_name[index]))%>%
+      arrange(desc(y))
+    
+    plotlist <- purrr::map2(as.character(params$`x`),as.character(params$`y`),function(x,y){
+      p <- ggdraw()+
+        draw_image(x,scale = 0.9)+
+        draw_label(y, x = 0.05, y = 0.9,
+                   hjust=0,vjust = 0,
+                   size = 10, fontface = 'bold')
+    })
+    
+    i <- 1
+    while (i<length(plotlist)) {
+      p2 <- plot_grid(plotlist[[i+5]],plotlist[[i+4]],plotlist[[i+3]],
+                      plotlist[[i+2]],plotlist[[i+1]],plotlist[[i]],
+                      ncol = 3,align="hv",nrow=2,axis="l",vjust = 3)
+      cursor_bookmark(my_doc,"pic")
+      body_add_gg(my_doc,p2,width = 5,height = 4.29)
+      i <- i+6
+    }
+    
+    my_doc
+  }
+  
+  #########################################################################主程序
   data_head <- raw_data1[,1]
   if(data_head[1]=='CCK8'){
     my_doc <- cck8(raw_data1,raw_data2)
-  }else if(data_head[1]=='Reporter Gene Assay'){
+  }
+  else if(data_head[1]=='Reporter Gene Assay'){
     my_doc <- dluc(raw_data1,raw_data2)
-  }else if(data_head[1]=='qRTPCR'){
+  }
+  else if(data_head[1]=='qRTPCR'){
     my_doc <- qRTPCR(raw_data1,raw_data2,image_path,image_name)
-  }else if(data_head[1]=='gene_kd_oe'){
+  }
+  else if(data_head[1]=='gene_kd_oe'){
     my_doc <- gene_kd_oe(raw_data1,image_path,image_name)
-  }else if(data_head[1]=='cell_apoptosis'){
+  }
+  else if(data_head[1]=='cell_apoptosis'){
     my_doc <- cell_apoptosis(raw_data1,raw_data2,image_path,image_name)
-  }else if(data_head[1]=='colony_formation'){
+  }
+  else if(data_head[1]=='colony_formation'){
     my_doc <- colony_formation(raw_data1,raw_data2)
-  }else if(data_head[1]=='wound_healing'){
+  }
+  else if(data_head[1]=='wound_healing'){
     my_doc <- wound_healing(raw_data1,raw_data2,image_path,image_name)
-  }else if(data_head[1]=='transwell'){
+  }
+  else if(data_head[1]=='transwell'){
     my_doc <- transwell(raw_data1,raw_data2)
-  }else if(data_head[1]=='cell_cycle'){
+  }
+  else if(data_head[1]=='cell_cycle'){
     my_doc <- cell_cycle(raw_data1,raw_data2,image_path,image_name)
-  }else if(data_head[1]=='Co-IP'){
+  }
+  else if(data_head[1]=='Co-IP'){
     my_doc <- CoIP(raw_data1,raw_data2,image_path,image_name)
-  }else if(data_head[1]=='EdU'){
+  }
+  else if(data_head[1]=='EdU'){
     my_doc <- EdU(raw_data1,raw_data2,image_path,image_name)
-  }else if(data_head[1]=='migration'){
+  }
+  else if(data_head[1]=='migration'){
     my_doc <- migration(raw_data1,raw_data2,image_path,image_name)
+  }
+  else if(data_head[1]=='MOI预实验'){
+    my_doc <- MOI(raw_data1,raw_data2,image_path,image_name)
+  }
+  else if(data_head[1]=='WB'){
+    my_doc <-WB(raw_data1,raw_data2,image_path,image_name)
+  }
+  else if(data_head[1]=='细胞支原体检测'){
+    my_doc <-cell_myco_test(raw_data1,raw_data2,image_path,image_name)
+  }
+  else if(data_head[1]=='细胞产品说明'){
+    my_doc <-cell_product_man(raw_data1,raw_data2,image_path,image_name)
   }
   else{
     my_doc <- vector_vrius(raw_data1,raw_data2,image_path,image_name)
   }
 }
 
-  
+
 
 

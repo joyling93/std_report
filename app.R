@@ -9,6 +9,8 @@ library(dplyr)
 library(flextable)
 library(tidyr)
 library(viridis)
+library(cowplot)
+library(magick)
 # Define UI for data upload app ----
 ui <- fluidPage(
   
@@ -18,8 +20,12 @@ ui <- fluidPage(
   fluidRow(
     column(4,wellPanel(
     selectInput('input_type','选择报告种类',
-                c('CCK8_MTT','qPCR','reporter_gene_assay','gene_kd_oe','vector_vrius','colony_formation'
-                  ,'wound_healing','Transwell_invasion','cell_cycle','cell_apoptosis','Co-IP','EdU_Br','Transwell_migration'))
+                c('CCK8_MTT','qPCR','reporter_gene_assay',
+                  'gene_kd_oe','vector_vrius','colony_formation',
+                  'wound_healing','Transwell_invasion','cell_cycle',
+                  'cell_apoptosis','Co-IP','EdU_Br',
+                  'Transwell_migration','MOI预实验','WB',
+                  '细胞支原体检测','细胞产品说明'))
   )),
     uiOutput('uip')
   ),
@@ -37,9 +43,7 @@ ui <- fluidPage(
   h5("已上传图片列表："),
   fluidRow(column(3, verbatimTextOutput("value2",placeholder = TRUE))),
       downloadButton(outputId = "download", label = "在此处下载报告"),
-  hr(),
-  tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/58081fe94863251f4269aaf6/work/5ece14adfe4caa0021bc21a7",
-  "点此链接下载所有Excel模板集", target = "_blank")
+  hr()
 )
 
 
@@ -78,7 +82,15 @@ server <- function(input, output) {
            'EdU_Br'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d946",
                          "点此链接下载Excel模板", target = "_blank"),
            'Transwell_migration'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5ed06429ab2cbf0021d5d940",
-                               "点此链接下载Excel模板", target = "_blank")
+                               "点此链接下载Excel模板", target = "_blank"),
+           'MOI预实验'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5f12ecef0a8eb100211f6386",
+                                    "点此链接下载Excel模板", target = "_blank"),
+           'WB'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5f12ecef0a8eb100211f6387",
+                           "点此链接下载Excel模板", target = "_blank"),
+           '细胞支原体检测'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5f12ecef0a8eb100211f6384",
+                            "点此链接下载Excel模板", target = "_blank"),
+           '细胞产品说明'= tags$a(href = "https://www.teambition.com/project/58081fe94863251f4269aaf3/works/5ed0641b21c5cf0021786f8f/work/5f12ecef0a8eb100211f6385",
+                                         "点此链接下载Excel模板", target = "_blank")
            )
   })
   output$ui <- renderUI({
@@ -88,13 +100,13 @@ server <- function(input, output) {
     # Depending on input$input_type, we'll generate a different
     # UI component and send it to the client.
     switch(input$input_type,
-           "cck8" = fileInput("file2", "目前无需额外上传",
+           "CCK8_MTT" = fileInput("file2", "目前无需额外上传",
                               multiple = TRUE,
                               placeholder = 'no more needed'),
-           "qRT-PCR" = fileInput("file2", "目前无需额外上传",
+           "qPCR" = fileInput("file2", "目前无需额外上传",
                                  multiple = FALSE,
                                  placeholder = 'no more needed'),
-           "reportor_gene_assay" =  fileInput("file2", "目前无需额外上传",
+           "reporter_gene_assay" =  fileInput("file2", "目前无需额外上传",
                                               multiple = TRUE,
                                               placeholder = 'no more needed'),
            "gene_kd_oe" = fileInput("file2", "上传 病毒感染图片、细胞PCR检测结果 和 wb实验结果(可选) 图片",
@@ -109,7 +121,7 @@ server <- function(input, output) {
            'wound_healing'= fileInput("file2","目前无需额外上传",
                                       multiple = TRUE,
                                       placeholder = 'no more needed'),
-           'transwell'= fileInput("file2","目前无需额外上传",
+           'Transwell_invasion'= fileInput("file2","目前无需额外上传",
                                   multiple = TRUE,
                                   placeholder = 'no more needed'),
            'cell_cycle'= fileInput("file2","目前无需额外上传",
@@ -121,12 +133,22 @@ server <- function(input, output) {
            'Co-IP'= fileInput("file2","coip实验结果",
                               multiple = TRUE,
                               placeholder = 'coip实验结果.png'),
-           'EdU'= fileInput("file2","目前无需额外上传",
+           'EdU_Br'= fileInput("file2","目前无需额外上传",
                             multiple = TRUE,
                             placeholder = 'no more needed'),
-           'migration'= fileInput("file2","目前无需额外上传",
+           'Transwell_migration'= fileInput("file2","目前无需额外上传",
                                   multiple = TRUE,
-                                  placeholder = 'no more needed')
+                                  placeholder = 'no more needed'),
+           
+           'MOI预实验'= fileInput("file2","细胞预实验结果图片",
+                              multiple = TRUE,
+                              placeholder = 'K562-05-72-G-3-10X.jpg'),
+           'WB'= fileInput("file2","wb结果",
+                               multiple = TRUE,
+                               placeholder = 'wb结果.png'),
+           '细胞支原体检测'= fileInput("file2","支原体检测结果",
+                                            multiple = TRUE,
+                                            placeholder = '支原体检测结果.png')
     )
   })
   output$value1 <- renderText({
