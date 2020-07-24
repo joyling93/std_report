@@ -264,3 +264,51 @@ my_doc %>%
   body_bookmark("result")
 print(my_doc,target = './data/wb_templete.docx')
 
+
+
+
+#MOI
+my_doc <- read_docx('./data/template.docx')
+my_doc %>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("contract_num")%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par("项目结题报告",style  = 'Title')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par(value = '项目名称：病毒感染预实验',style  = 'Subtitle')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("date")%>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "仪器与试剂", style = "heading 1") %>%
+  body_add_par("实验仪器",style='heading 2')  %>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("equipment_info")%>%
+  body_add_par("实验试剂",style='heading 2')  %>%
+  body_add_par('',style = 'Normal')%>%
+  body_bookmark("regent_info")%>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "实验方法和分组", style = "heading 1") %>%
+  body_add_par("实验方法",style='heading 2')  %>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par("实验分组",style='heading 2')  %>%
+  body_add_par('',style = 'pic_style')%>%
+  body_bookmark("exp_group") %>%
+  body_add_break(pos = "after")%>%
+  
+  body_add_par(value = "实验结论", style = "heading 1") %>%
+  body_bookmark("conclusion")%>%
+  
+  body_add_par(value = "感染图片", style = "heading 1")%>%
+  body_bookmark("pic")%>%
+  
+  
+print(my_doc,target = './data/MOI_templete.docx')
+

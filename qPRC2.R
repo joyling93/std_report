@@ -1486,7 +1486,6 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     my_doc
   }
   
-  
   ## vector_vrius
   vector_vrius <- function(raw_data1,raw_data2,image_path,image_name){
     #表头定位
@@ -1869,7 +1868,6 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     my_doc
   }
   
-  
   ## qRTPCR 
   qRTPCR <- function(raw_data1,raw_data2,image_path,image_name){
     #表头定位
@@ -2114,10 +2112,8 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     my_doc
   }
   
-  
   ## cck8 
-  cck8 <- function(raw_data1,raw_data2){
-    #表头定位
+  cck8 <- function(raw_data1,raw_data2){  #表头定位
     raw_data1 <- raw_data1
     raw_data2 <- raw_data2
     data_head <- raw_data1[,1]
@@ -2149,52 +2145,30 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     compare_group <- paste(statistic_test_data[,1],statistic_test_data[,3],sep = '/',collapse = ',')
     compare_group_list <- strsplit(strsplit(compare_group,',')[[1]],'/')
     
-    #确定原始数据
-    omit_extream <- function(x){
-      y <- x[order(abs(x-quantile(x,0.5,na.rm = TRUE)))]
-      y <- y[1:3]
-    } 
-    
-    colnames(raw_data2) <- str_replace_all(colnames(raw_data2),'[.]',' ')
     target_data <- raw_data2%>%
-      gather(colnames(raw_data2)[-(1:2)],key = 'group',value = 'value')%>%
-      drop_na()%>%
-      spread(sample,value)%>%
-      select(-time,-group)%>%
-      apply(1,omit_extream)
+      pivot_longer(3:length(raw_data2),
+                   names_to='group',
+                   values_to='values',
+                   values_drop_na=TRUE)%>%
+      group_by(group,time)%>%
+      mutate(values.sort=values-quantile(values,0.5))%>%
+      slice_min(values.sort,n=6,with_ties = FALSE)%>%
+      mutate(sample=paste0('复孔',1:3))
     
-    
-    data_body <- as.data.frame(t(target_data))%>%
-      mutate(V1=round(V1,digits = 3),
-             V2=round(V2,digits = 3),
-             V3=round(V3,digits = 3))
-    colnames(data_body) <- c('sample1','sample2','sample3')
-    data_label <- raw_data2%>%
-      gather(colnames(raw_data2)[-(1:2)],key = 'group',value = 'value')%>%
-      drop_na()%>%
-      filter(sample<4)%>%
-      spread(sample,value)%>%
-      select(time,group)
-    
-    clean_data <- cbind(data_label,data_body )
-    
-    z <- clean_data%>%
-      gather('sample1','sample2','sample3',key = 'sample',value = 'value')
-    
-    mean_sd_data <- 
-      z%>%
-      group_by(time,group)%>%
+    mean_sd_data <- target_data%>%
       summarise(
-        Mean=round(mean(value,na.rm = TRUE),digits = 3),
-        SD=round(sd(value,na.rm = TRUE),digits = 3),
-        QC=round(sd(value,na.rm = TRUE)/mean(value,na.rm = TRUE),digits = 3)
-      )%>%
-      left_join(clean_data,by = c("group",'time'))%>%
-      arrange(group)
+        Mean=round(mean(values,na.rm = TRUE),digits = 2),
+        SD=round(sd(values,na.rm = TRUE),digits = 2),
+        QC=round(sd(values,na.rm = TRUE)/mean(values,na.rm = TRUE),digits = 2)
+      )
     
-    #原始数据和常规统计量
-    mean_sd_ft <- mean_sd_data%>%
-      flextable(col_keys = c('group','time','sample1','sample2','sample3','Mean','SD','QC')) %>%
+    mean_sd_ft <- 
+      target_data%>%
+      select(-values.sort)%>%
+      pivot_wider(names_from=sample,values_from=values)%>%
+      left_join(y=mean_sd_data)%>%
+      select(group,everything())%>%
+      flextable()%>%
       merge_v(j=1)%>%
       fix_border_issues()%>%
       color(i=~QC>=0.5,j=~QC, color = "red")%>%
@@ -2209,15 +2183,11 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       width(j = 1, width = 1.5)%>%
       font(fontname = fontname, part = "all")
     
-    #数据归一化
-    nor_data <-  do.call(rbind,lapply(split(z,z$group),function(x){
-      y <- x$'value'/mean(x$'value'[as.character(x$'time')==test_0_point[1]])
-      cbind(x,y)
-    }))
     
     #显著性
     p_value <- as.data.frame(do.call(cbind,lapply(compare_group_list,function(x){
-      y <- z %>%
+      y <- target_data[,c(1,3,4)]%>%
+        rename(value=values)%>%
         filter(group==x[1]|group==x[2])%>%
         group_by(time)
       p_value <- unlist(lapply(split(y,y$time),function(x){
@@ -2248,31 +2218,56 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       font(fontname = fontname, part = "all")
     
     #统计作图
-    p <- ggline(z, x="time", y="value", add = "mean_sd", color = "group",palette = 'simpsons')+
-      theme(plot.title = element_text(lineheight=.8, size=30, face="bold",hjust = 0.5),
+    p <- ggplot(mean_sd_data,aes(time,Mean,color=group,fill=group))+
+      geom_line()+
+      geom_point(size=1.5)+
+      geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
+                    width=.7)+
+      scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+      scale_x_continuous(expand = expansion(mult = c(0,.01)))+
+      theme(plot.title = element_text(face="bold"),
+            plot.title.position = "panel",
+            plot.subtitle = element_text(color = "grey"),
+            panel.background = element_rect(fill = NA),
+            legend.key = element_rect(fill = NA),
             axis.title= element_text(size = 12),
-            axis.text.x = element_text(size = 12,angle = 45,hjust = 1),
-            axis.text.y = element_text(size = 12),
+            axis.text.x = element_text(size = 10,hjust = 1),
+            axis.line = element_line(colour = "black"),
+            axis.text.y = element_text(size = 10),
             legend.position="right",
-            legend.title=element_blank(),
-            legend.key=element_rect(size=0.005),
-            legend.text = element_text(size = 7))+
-      labs(title = '' ,x= 'Time(h)',y='Cell Viabilit')+
-      scale_x_discrete(expand = c(0,0.2))
+      )+
+      scale_color_viridis(option = 'D',discrete = T)+
+      labs(title = '' ,x= 'Time(h)',y='Cell Viabilit')
     
-    p2 <- ggline(nor_data, x="time", y="y", add = "mean_sd", color = "group",palette = 'simpsons')+
-      theme(plot.title = element_text(lineheight=.8, size=30, face="bold",hjust = 0.5),
+    p2 <- target_data%>%
+      group_by(group)%>%
+      mutate(values=round(values/mean(values[time==0]),digits = 2))%>%
+      group_by(time,group)%>%
+      summarise(
+        Mean=round(mean(values,na.rm = TRUE),digits = 2),
+        SD=round(sd(values,na.rm = TRUE),digits = 2),
+        QC=round(sd(values,na.rm = TRUE)/mean(values,na.rm = TRUE),digits = 2)
+      )%>%
+      ggplot(aes(time,Mean,color=group,fill=group))+
+      geom_line()+
+      geom_point(size=1.5)+
+      geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
+                    width=.7)+
+      scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
+      scale_x_continuous(expand = expansion(mult = c(0,.01)))+
+      theme(plot.title = element_text(face="bold"),
+            plot.title.position = "panel",
+            plot.subtitle = element_text(color = "grey"),
+            panel.background = element_rect(fill = NA),
+            legend.key = element_rect(fill = NA),
             axis.title= element_text(size = 12),
-            axis.text.x = element_text(size = 12,angle = 45,hjust = 1),
-            axis.text.y = element_text(size = 12),
+            axis.text.x = element_text(size = 10,hjust = 1),
+            axis.line = element_line(colour = "black"),
+            axis.text.y = element_text(size = 10),
             legend.position="right",
-            legend.title=element_blank(),
-            legend.key=element_rect(size=0.005),
-            legend.text = element_text(size = 7))+
-      labs(title = '' ,x= 'Time(h)',y='Relative Cell Viability')+
-      scale_x_discrete(expand = c(0,0.2))
-    
-    
+      )+
+      scale_color_viridis(option = 'D',discrete = T)+
+      labs(title = '' ,x= 'Time(h)',y='Relative Cell Viability')
     
     #仪器与试剂
     #仪器
@@ -2388,8 +2383,7 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       
       body_add_par(value = "实验结论", style = "heading 2")
     my_doc
-  }
-  
+    }
   
   ## 双萤光素酶
   dluc <- function(raw_data1,raw_data2){
@@ -2789,13 +2783,13 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     
     #试剂列表
     regent_name <- c(
-      'CCK-8细胞增殖及毒性检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
-      '胎牛血清','NP-40裂解液',
+      'DMEM高糖培养基','RPMI 1640培养基',
+      '胎牛血清','加强型RIPA裂解液',
       '蛋白酶抑制剂/磷酸酶抑制剂/EDTA','D-PBS','胰酶')
     regent_source <- c(
-      '北京索莱宝科技有限公司','美国Gibco公司','美国Gibco公司',
-      '美国Gibco公司','北京索莱宝科技有限公司',
-      "上海碧云天生物科技有限公司","上海碧云天生物科技有限公司","上海碧云天生物科技有限公司")
+      '美国Gibco公司','美国Gibco公司',
+      '美国Gibco公司','北京普利莱基因技术有限公司',
+      "上海碧云天生物科技有限公司","上海碧云天生物科技有限公司","美国Gibco公司")
     regent_table <- data.frame(regent_name,regent_source)
     regent_ft <- regent_table%>%
       flextable()%>%
@@ -2889,13 +2883,11 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     
     #试剂列表
     regent_name <- c(
-      'CCK-8细胞增殖及毒性检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
-      '胎牛血清','NP-40裂解液',
-      '蛋白酶抑制剂/磷酸酶抑制剂/EDTA','D-PBS','胰酶')
+      'DMEM高糖培养基','RPMI 1640培养基',
+      '胎牛血清','D-PBS','胰酶')
     regent_source <- c(
-      '北京索莱宝科技有限公司','美国Gibco公司','美国Gibco公司',
-      '美国Gibco公司','北京索莱宝科技有限公司',
-      "上海碧云天生物科技有限公司","上海碧云天生物科技有限公司","上海碧云天生物科技有限公司")
+      '美国Gibco公司','美国Gibco公司',
+      '美国Gibco公司',"上海碧云天生物科技有限公司","上海碧云天生物科技有限公司")
     regent_table <- data.frame(regent_name,regent_source)
     regent_ft <- regent_table%>%
       flextable()%>%
@@ -2930,31 +2922,34 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     
     
     #结果图片插入
-    #图片高度控制
-    picture_list <- group_info$细胞
+    picture_list <- unique(group_info$细胞)
     index <- unlist(lapply(picture_list,function(x){
       str_which(image_name,x)
     }))
     
     params <- data.frame("x"=image_path[index],"y"=sub('.png|.jpg','',image_name[index]))%>%
-      arrange(desc(y))
+      separate(y,sep = '-',remove = F,into = as.character(1:6))%>%
+      mutate(`2`=as.numeric(`2`))%>%
+      arrange(desc(`2`),`6`)
     
     plotlist <- purrr::map2(as.character(params$`x`),as.character(params$`y`),function(x,y){
+      
       p <- ggdraw()+
-        draw_image(x,scale = 0.9)+
-        draw_label(y, x = 0.05, y = 0.9,
+        draw_image(x,scale = 0.95)+
+        draw_label(y, x = 0.1, y = 0.7,
                    hjust=0,vjust = 0,
                    size = 10, fontface = 'bold')
     })
     
     i <- 1
     while (i<length(plotlist)) {
-      p2 <- plot_grid(plotlist[[i+5]],plotlist[[i+4]],plotlist[[i+3]],
-                      plotlist[[i+2]],plotlist[[i+1]],plotlist[[i]],
-                      ncol = 3,align="hv",nrow=2,axis="l",vjust = 3)
+      p2 <- plot_grid(plotlist[[i+1]],plotlist[[i]],
+                      ncol = 2,align="v",nrow=1,axis="t")+
+        theme(plot.margin = margin(-110,0,-110,0))
       cursor_bookmark(my_doc,"pic")
-      body_add_gg(my_doc,p2,width = 5,height = 4.29)
-      i <- i+6
+      body_add_gg(my_doc,p2,width = 5,height = 4)
+      i <- i+2
+      print(i)
     }
     
     my_doc

@@ -1,5 +1,5 @@
 options(shiny.maxRequestSize = 30*1024^2)
-library(ggpubr)
+library(ggplot2)
 source("qPRC2.R")
 library(shiny)
 library(openxlsx)
