@@ -1878,9 +1878,9 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
     ex_group <- str_which(data_head, '实验分组')
     contract_num <- str_which(data_head, '合同号')
     statistic_p <- str_which(data_head, '统计检验参数')
-    paried <- str_which(data_head, '是否配对')
+    paired <- str_which(data_head, '是否仅检测本底')
     statistic_test_group <- str_which(data_head, '显著性检验分组')
-    fontname <- "Arial"
+    fontname <- "Times New Roman"
     nor_group <- str_which(data_head, '归一化组')
     
     #实验分组
@@ -1923,9 +1923,15 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       group_by(相关基因,分组名称)%>%
       mutate(value.sort=value-quantile(value,0.5))%>%
       slice_min(value.sort,n=3,with_ties = FALSE)%>%
-      mutate(sample=paste0('复孔',1:3))%>%
-      group_by(相关基因)%>%
-      mutate(value.fin=2^(mean(value[归一化组%in%'是'])-value))
+      mutate(sample=paste0('复孔',1:3))
+    
+    if(raw_data1[paired,2]=='否'){
+      target_data <- target_data%>%
+        group_by(相关基因)%>%
+        mutate(value.fin=2^(mean(value[归一化组%in%'是'])-value))} else {
+          target_data <- target_data%>%
+            mutate(value.fin=value)
+        }
     
     #均值标准差表
     mean_sd_data <- target_data %>% 
@@ -1950,13 +1956,20 @@ trans <-function(raw_data1,raw_data2,image_path,image_name){
       merge_v(j=1)%>%
       border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
       add_header_lines("表3.1.1 相对mRNA表达量平均值和标准差")%>%
-      compose(part = 'header',i=1,value = as_paragraph('表3.1.1 相对mRNA表达量平均值和标准差(2',as_sup('-∆∆Ct'),')'))%>%
       align(align = 'center',part = 'all') %>%
       fontsize(size = 7,part = 'all')%>%
       autofit(add_h = 0.2) %>%
       width(j = 1, width = 1)%>%
       height(part = 'foot',height = 1)%>%
       font(fontname = fontname, part = "all")
+    
+    if(raw_data1[paired,2]=='否'){
+      mean_sd_ft <- mean_sd_ft%>%
+        compose(part = 'header',i=1,
+                value=as_paragraph('表3.1.1 相对mRNA表达量平均值和标准差(2',as_sup('-∆∆Ct'),')'))} else {
+                  mean_sd_ft <- mean_sd_ft%>%
+                    compose(part = 'header',i=1,
+                            value = as_paragraph('表3.1.1 相对mRNA表达量平均值和标准差(∆Ct)'))}
     
     #显著性
     p_value <- do.call(rbind,lapply(compare_group_list,function(x){
