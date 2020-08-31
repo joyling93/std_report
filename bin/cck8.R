@@ -20,7 +20,7 @@ cck8 <- function(raw_data1,raw_data2){
         assay_group_ft <- assay_group_data[,1:5] %>%
                 flextable()%>%
                 align(align = 'left',part = 'all')%>%
-                add_header_lines("表2.2.1  CCK-8细胞增殖及毒性检测实验分组")%>%
+                add_header_lines("表2.2.1  细胞增殖及毒性检测实验分组")%>%
                 footnote(i=2,j=5,part = 'header',value = as_paragraph(paste('检测时间为加药后',test_0_point,'，单位：h')))%>%
                 align(align = 'center',part = 'all')%>%
                 fontsize(size = 7.5,part = 'all')%>%
@@ -62,7 +62,7 @@ cck8 <- function(raw_data1,raw_data2){
                 set_header_labels(group='实验分组',time='检测时间点',Mean='平均值',SD='标准差',sample1='复孔1',sample2='复孔2',sample3='复孔3')%>%
                 footnote(j=~QC,part = 'header',value = as_paragraph('QC值为标准差/平均值，数值越大表明该组实验数据波动性越高，其中≥0.5的值会被标记为红色'))%>%
                 border_inner_h(border = fp_border(color="black", width = 1),part = 'body' )%>%
-                add_header_lines("表3.1.1  CCK-8细胞增殖及毒性检测原始数据（OD450）")%>%
+                add_header_lines("表3.1.1  细胞增殖及毒性检测原始数据（OD450）")%>%
                 align(align = 'center',part = 'all') %>%
                 fontsize(size = 9,part = 'all')%>%
                 merge_v(j=~group,part = "body")%>%
@@ -93,7 +93,7 @@ cck8 <- function(raw_data1,raw_data2){
         p_value_ft <-  p_value_table%>%
                 select(length(p_value_table),1:(length(p_value_table)-1))%>%
                 flextable() %>%
-                add_header_lines("表3.2.1  CCK-8细胞增殖及毒性检测数据显著性差异( P_value )")%>%
+                add_header_lines("表3.2.1  细胞增殖及毒性检测数据显著性差异( P_value )")%>%
                 footnote(i=1,part = 'header',
                          value = as_paragraph('ns：P_value>0.05\n *：P_value≤0.05\n **：P_value≤0.01\n ***：P_value≤0.001\n ****：P_value≤0.0001\n')) %>%
                 align(align = 'center',part = 'all') %>%
@@ -155,50 +155,50 @@ cck8 <- function(raw_data1,raw_data2){
                 scale_color_viridis(option = 'D',discrete = T)+
                 labs(title = '' ,x= 'Time(h)',y='Relative Cell Viability')
         p <- cowplot::plot_grid(p1,p2,ncol = 1,
-                                labels=list('图3.3.1  CCK-8细胞绝对增殖/毒性检测统计图',
-                                            '图3.3.2  CCK-8细胞相对增殖/毒性检测统计图'),
-                                label_fontfamily ='Songti SC',
+                                labels=list('Absolute abundance',
+                                            'Relative abundance'),
+                                label_fontfamily ="Arial",
                                 hjust = -0.1)
         
         ## ic50
-        if(data_head=="CCK8(IC50)"){
-                dose.c <-  assay_group_data%>%
-                        select_if(~all(!is.na(.)))%>%
-                        dplyr::select(contains("处理"))%>%
-                        as_tibble()%>%
-                        str_match_all(.,"[\\s，,](\\d+)")
-                
-                target_data <- left_join(target_data,
-                                         data.frame('group'=assay_group_data[,1],
-                                                    'con'=as.numeric(dose.c[[1]][,2])))%>%
-                        ungroup%>%
-                        arrange(con)%>%
-                        mutate(values=round(values/mean(values[con%in%con[1:3]]),digits = 3)*100)
-                #dot data
-                ryegrass.LL.4 <- drc::drm(values~con,data = target_data,fct = drc::LL.4())
-                ic50 <- round(drc::ED(ryegrass.LL.4, 50)[,1],digits = 2)
-                #line data
-                newdata <- expand.grid(conc=exp(seq(log(min(target_data$con)+0.01), log(max(target_data$con)), length=500)))
-                pm <- predict(ryegrass.LL.4, newdata=newdata, interval="confidence") 
-                newdata$p <- pm[,1]
-                newdata$pmin <- pm[,2]
-                newdata$pmax <- pm[,3]
-                
-                # plotting the curve
-                p <- target_data%>%
-                        group_by(con)%>%
-                        summarise(y=mean(values))%>%
-                        ggplot(aes(x = con, y = y)) +
-                        geom_point()+ 
-                        annotate("text",x=range(newdata$conc)[2],
-                                 y=range(newdata$p)[2],
-                                 label=paste0("IC50:",ic50),
-                                 hjust=1.2,vjust=1.2,size=6)+
-                        geom_ribbon(data=newdata, aes(x=conc, y=p, ymin=pmin, ymax=pmax), alpha=0.2) +
-                        geom_line(data=newdata, aes(x=conc, y=p)) +
-                        xlab("Drug Level") + ylab("cell viablity(%)")+
-                        cowplot::theme_cowplot(12)
-        }
+        #if(data_head=="CCK8(IC50)"){
+        #        dose.c <-  assay_group_data%>%
+        #                select_if(~all(!is.na(.)))%>%
+        #                dplyr::select(contains("处理"))%>%
+        #                as_tibble()%>%
+        #                str_match_all(.,"[\\s，,](\\d+)")
+        #        
+        #        target_data <- left_join(target_data,
+        #                                 data.frame('group'=assay_group_data[,1],
+        #                                            'con'=as.numeric(dose.c[[1]][,2])))%>%
+        #                ungroup%>%
+        #                arrange(con)%>%
+        #                mutate(values=round(values/mean(values[con%in%con[1:3]]),digits = 3)*100)
+        #        #dot data
+        #        ryegrass.LL.4 <- drc::drm(values~con,data = target_data,fct = drc::LL.4())
+        #        ic50 <- round(drc::ED(ryegrass.LL.4, 50)[,1],digits = 2)
+        #        #line data
+        #        newdata <- expand.grid(conc=exp(seq(log(min(target_data$con)+0.01), log(max(target_data$con)), length=500)))
+        #        pm <- predict(ryegrass.LL.4, newdata=newdata, interval="confidence") 
+        #        newdata$p <- pm[,1]
+        #        newdata$pmin <- pm[,2]
+        #        newdata$pmax <- pm[,3]
+        #        
+        #       # plotting the curve
+        #        p <- target_data%>%
+        #                group_by(con)%>%
+        #                summarise(y=mean(values))%>%
+        #                ggplot(aes(x = con, y = y)) +
+        #                geom_point()+ 
+        #                annotate("text",x=range(newdata$conc)[2],
+        #                         y=range(newdata$p)[2],
+        #                         label=paste0("IC50:",ic50),
+        #                         hjust=1.2,vjust=1.2,size=6)+
+        #                geom_ribbon(data=newdata, aes(x=conc, y=p, ymin=pmin, ymax=pmax), alpha=0.2) +
+        #                geom_line(data=newdata, aes(x=conc, y=p)) +
+        #                xlab("Drug Level") + ylab("cell viablity(%)")+
+        #                cowplot::theme_cowplot(12)
+        #}
         
         #仪器与试剂
         #仪器
@@ -223,7 +223,7 @@ cck8 <- function(raw_data1,raw_data2){
         
         #试剂列表
         regent_name <- c('质粒小量快速提取试剂盒(离心柱型)','限制性内切酶类',
-                         'CCK-8细胞增殖及毒性检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
+                         '细胞增殖及毒性检测试剂盒','DMEM高糖培养基','RPMI 1640培养基',
                          '胎牛血清')
         regent_source <- c('天根生化科技(北京)有限公司','美国NEB公司/美国ThermoFisher公司',
                            '北京索莱宝科技有限公司','美国Gibco公司','美国Gibco公司','美国Gibco公司')
@@ -251,7 +251,7 @@ cck8 <- function(raw_data1,raw_data2){
                 body_add_par("项目结题报告",style  = 'Title')%>%
                 body_add_par('',style = 'Normal')%>%
                 body_add_par('',style = 'Normal')%>%
-                body_add_par(value = '项目名称：CCK-8法细胞增殖活力测定',style  = 'Subtitle')%>%
+                body_add_par(value = '项目名称：细胞增殖活力测定',style  = 'Subtitle')%>%
                 body_add_par('',style = 'Normal')%>%
                 body_add_par('',style = 'Normal')%>%
                 body_add_par('',style = 'Normal')%>%

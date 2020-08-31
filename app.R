@@ -1,6 +1,6 @@
 options(shiny.maxRequestSize = 30*1024^2)
 library(ggplot2)
-source("qPRC2.R")
+source("qPRC2.R",encoding = 'UTF8')
 library(shiny)
 library(openxlsx)
 library(officer)
