@@ -68,7 +68,10 @@ vector_virus <- function(raw_data1,raw_data2,image_path,image_name){
                 font(fontname = fontname, part = "all")
         
         #读入模板
-        my_doc <- read_docx('./data/vector&vrius_templete.docx')
+        
+        my_doc <- read_docx(ifelse(data_head[fun_type+1]=='过表达'
+                                   ,'./data/vector&vrius_templete.docx'
+                                   ,'./data/vector&vrius_templete2.docx'))
         my_doc %>%
                 cursor_bookmark("contract_num")%>%
                 body_add_par(data_head[contract_num+1],style  = 'Subtitle')%>%
@@ -86,7 +89,8 @@ vector_virus <- function(raw_data1,raw_data2,image_path,image_name){
                         cursor_reach("测序引物序列")%>%
                         body_add_par("",style = "pic_style")%>%
                         body_add_flextable(value=primer_seq_ft)%>%
-                        cursor_reach(keyword = "靶序列")
+                        cursor_bookmark('seq')
+                        #cursor_reach(keyword = "靶序列")
                 n <- nrow(target_info_data)
                 for(i in 1:n){
                         body_add_par(my_doc,target_info_data[i,1],style = 'Normal')
@@ -122,7 +126,8 @@ vector_virus <- function(raw_data1,raw_data2,image_path,image_name){
         }else if(data_head[ex_type+1]=='病毒包装'){
                 picture_list <- list('酶切鉴定结果')
                 my_doc %>%
-                        cursor_reach(keyword = "靶序列")%>%
+                        cursor_bookmark('seq')%>%
+                        #cursor_reach(keyword = "靶序列")%>%
                         body_remove()%>%
                         cursor_reach(keyword = "^载体构建信息$")%>%
                         body_remove()%>%
@@ -145,7 +150,8 @@ vector_virus <- function(raw_data1,raw_data2,image_path,image_name){
                         cursor_reach("测序引物序列")%>%
                         body_add_par("",style = "pic_style")%>%
                         body_add_flextable(value=primer_seq_ft)%>%
-                        cursor_reach(keyword = "靶序列")
+                        cursor_bookmark('seq')
+                        #cursor_reach(keyword = "靶序列")
                 n <- nrow(target_info_data)
                 for(i in 1:n){
                         body_add_par(my_doc,target_info_data[i,1],style = 'Normal')

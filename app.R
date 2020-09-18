@@ -9,8 +9,8 @@ library(dplyr)
 library(flextable)
 library(tidyr)
 library(viridis)
-library(cowplot)
-library(magick)
+#library(cowplot)
+#library(magick)
 # Define UI for data upload app ----
 ui <- fluidPage(
   
