@@ -13,8 +13,8 @@ library(magick)
 dir('~/Desktop/使用教程和资料/输入模板示例/')
 #raw_data1 <- read.xlsx('~/Desktop/HUVEC本底检测.xlsx',sheet=1)
 #raw_data2 <- read.xlsx('~/Desktop/HUVEC本底检测.xlsx',sheet=2,startRow = 3)
-raw_data1 <- read.xlsx('/Users/zhuomingx/Desktop/使用教程和资料/输入模板示例/载体构建和病毒包装.xlsx',sheet=1)
-raw_data2 <- read.xlsx('/Users/zhuomingx/Desktop/使用教程和资料/输入模板示例/载体构建和病毒包装.xlsx',sheet=2,startRow = 3)
+raw_data1 <- read.xlsx('../D-FW-201912111140-徐燕-PC9&A549细胞系建立-RT-qPCR.xlsx',sheet=1)
+raw_data2 <- read.xlsx('../D-FW-201912111140-徐燕-PC9&A549细胞系建立-RT-qPCR.xlsx',sheet=2,startRow = 3)
 
 
 image_name <- dir('~/Desktop/使用教程和资料/输入图片示例/')

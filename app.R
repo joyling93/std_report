@@ -20,13 +20,14 @@ ui <- fluidPage(
   fluidRow(
     column(4,wellPanel(
     selectInput('input_type','选择报告种类',
-                c('CCK8_MTT','qPCR','reporter_gene_assay',
-                  'gene_kd_oe','vector_virus','colony_formation',
+                c('vector_virus','CCK8_MTT','qPCR','reporter_gene_assay',
+                  'gene_kd_oe','colony_formation',
                   'wound_healing','Transwell_invasion','cell_cycle',
                   'cell_apoptosis','Co-IP','EdU_Br',
                   'Transwell_migration','MOI预实验','WB',
-                  '细胞支原体检测','细胞产品说明'))
+                  '细胞支原体检测','细胞产品说明'))#exclude 'vector_virus' temperally
   )),
+    textOutput('info'),
     uiOutput('uip')
   ),
   fluidRow(
@@ -50,6 +51,9 @@ ui <- fluidPage(
 
 # Define server logic to read selected file ----
 server <- function(input, output) {
+  output$info <- renderText({
+    ''
+  })
   output$uip <- renderUI({
     if (is.null(input$input_type))
       return()

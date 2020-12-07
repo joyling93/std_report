@@ -5,9 +5,9 @@ account: syngenbiotool
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 1595693
-bundleId: 3194251
+bundleId: 3941305
 url: https://syngenbiotool.shinyapps.io/standar_output/
-when: 1590564120.75656
+when: 1607052689.69243
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .RData|~$副本双萤光素酶报告实验范例(1).xlsx|template.R|vrius.R
+ignoredFiles: .RData|~$moi.docx|~$副本双萤光素酶报告实验范例(1).xlsx|~$支原体检测报告.docx|D-FW-202007080505-申政磊-云南省肿瘤医院-Jurkat细胞实验.xlsx|吴娜-cck8.docx|test/cck8_drc.R|test/debug.R

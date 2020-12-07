@@ -39,7 +39,7 @@ cck8 <- function(raw_data1,raw_data2){
                              values_drop_na=TRUE)%>%
                 group_by(group,time)%>%
                 mutate(values.sort=values-quantile(values,0.5))%>%
-                slice_min(values.sort,n=6,with_ties = FALSE)%>%
+                slice_min(values.sort,n=3,with_ties = FALSE)%>%
                 mutate(sample=paste0('复孔',1:3))
         
         mean_sd_data <- target_data%>%
@@ -110,10 +110,13 @@ cck8 <- function(raw_data1,raw_data2){
                 geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
                               width=.7)+
                 scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
-                scale_x_continuous(expand = expansion(mult = c(0,.01)))+
+                scale_x_continuous(expand = expansion(mult = c(0,.01))
+                                   ,breaks = unique(mean_sd_data$time))+
+                #guides(fill = )+
                 theme(plot.title = element_text(face="bold"),
                       plot.title.position = "panel",
                       plot.subtitle = element_text(color = "grey"),
+                      plot.margin = margin(r=1,unit = 'cm'),
                       panel.background = element_rect(fill = NA),
                       legend.key = element_rect(fill = NA),
                       axis.title= element_text(size = 12),
@@ -121,13 +124,17 @@ cck8 <- function(raw_data1,raw_data2){
                       axis.line = element_line(colour = "black"),
                       axis.text.y = element_text(size = 10),
                       legend.position="right",
+                      text=element_text(family="Songti SC",size=10,face = "bold")
                 )+
                 scale_color_viridis(option = 'D',discrete = T)+
-                labs(title = '' ,x= 'Time(h)',y='Cell Viabilit')
+                labs(title = '' ,x= 'Time(h)',y='Cell Viability')
+          
         
         p2 <- target_data%>%
                 group_by(group)%>%
-                mutate(values=round(values/mean(values[time==0]),digits = 2))%>%
+                mutate(values=round(values/mean(values[
+                  time==as.numeric(unique(assay_group_data$检测0点))
+                  ]),digits = 2))%>%
                 group_by(time,group)%>%
                 summarise(
                         Mean=round(mean(values,na.rm = TRUE),digits = 2),
@@ -140,10 +147,12 @@ cck8 <- function(raw_data1,raw_data2){
                 geom_errorbar(aes(ymin=Mean-SD,ymax=Mean+SD),stat = "identity",
                               width=.7)+
                 scale_y_continuous(expand = expand_scale(mult = c(0, .1)))+
-                scale_x_continuous(expand = expansion(mult = c(0,.01)))+
+                scale_x_continuous(expand = expansion(mult = c(0,.01))
+                             ,breaks = unique(mean_sd_data$time))+
                 theme(plot.title = element_text(face="bold"),
                       plot.title.position = "panel",
                       plot.subtitle = element_text(color = "grey"),
+                      plot.margin = margin(r=1,unit = 'cm'),
                       panel.background = element_rect(fill = NA),
                       legend.key = element_rect(fill = NA),
                       axis.title= element_text(size = 12),
@@ -151,6 +160,7 @@ cck8 <- function(raw_data1,raw_data2){
                       axis.line = element_line(colour = "black"),
                       axis.text.y = element_text(size = 10),
                       legend.position="right",
+                      text=element_text(family="Songti SC",size=10,face = "bold")
                 )+
                 scale_color_viridis(option = 'D',discrete = T)+
                 labs(title = '' ,x= 'Time(h)',y='Relative Cell Viability')
